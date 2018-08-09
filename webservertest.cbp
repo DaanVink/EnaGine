@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="webservertest" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/webservertest" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-lws2_32" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/webservertest" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Ena/globals.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Ena/globals.h" />
+		<Unit filename="Ena/httpHandle/event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Ena/httpHandle/event.h" />
+		<Unit filename="Ena/httpHandle/get/handleGet.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Ena/httpHandle/get/handleGet.h" />
+		<Unit filename="Ena/httpHandle/post/handlePost.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Ena/httpHandle/post/handlePost.h" />
+		<Unit filename="Ena/httpHandle/types.h" />
+		<Unit filename="Ena/init/build/buildFileTree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Ena/init/build/buildFileTree.h" />
+		<Unit filename="Ena/init/init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Ena/init/init.h" />
+		<Unit filename="Ena/init/settings/settingsParser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Ena/init/settings/settingsParser.h" />
+		<Unit filename="Ena/types/dictTree.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
