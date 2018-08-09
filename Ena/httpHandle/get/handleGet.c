@@ -9,8 +9,6 @@
 
 void HandleGet (int connected, SOCKET sock, char fileRequest[]) {
 
-    printf(SETTINGS_CONTENT_ROOT);
-
     int status = 200;
 
     static jmp_buf jumpBuffer;
@@ -22,16 +20,17 @@ void HandleGet (int connected, SOCKET sock, char fileRequest[]) {
     FILE *fp;
     long lSize;
     char* buffer;
+    char* errorPage;
     struct dirent *ent;
     char filesInDirectory;
     strcpy(filePath, "");
-    strncpy(filePath, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
+    strncat(filePath, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
     strcat(filePath, fileRequest);
     printf(filePath);
 
     if( access( filePath, F_OK ) != -1 ) {
         fp = fopen ( filePath , "rb" );
-        if( !fp ) perror(filePath),exit(1);
+        if( !fp ) perror(filePath), fclose(fp);
 
         fseek( fp , 0L , SEEK_END);
         lSize = ftell( fp );
@@ -61,23 +60,42 @@ void HandleGet (int connected, SOCKET sock, char fileRequest[]) {
                          "Content-Type: text/html; charset=ISO-8859-4\n"
                          "\n");
         strcat(response, buffer);
+        strcat(response, "\0");
+        free(buffer);
     }
     if (status == 404) {
-        strcpy(response, "HTTP/1.1 400 Bad Request\n"
+        fp = fopen ( SETTINGS_ERROR_HANDLING_404 , "rb" );
+        printf(SETTINGS_ERROR_HANDLING_404);
+        printf("\nTEST\n");
+        if( !fp ) perror(SETTINGS_ERROR_HANDLING_404);
+
+        fseek( fp , 0L , SEEK_END);
+        lSize = ftell( fp );
+        rewind( fp );
+
+        /* allocate memory for entire content */
+        errorPage = calloc( 1, lSize+1 );
+        if( !errorPage ) fclose(fp), status = 500;
+
+        /* copy the file into the buffer */
+        if( 1!=fread( errorPage , lSize, 1 , fp) ) fclose(fp), free(errorPage), status = 500;
+        fclose(fp);
+        strcpy(response, "HTTP/1.1 404 Not Found\n"
                          "Content-length: 47\n"
                          "Content-Type: text/html; charset=ISO-8859-4\n"
-                         "\n"
-                         "404");
+                         "\n");
+        strcat(response, errorPage);
+        strcat(response, "\0");
+        free(errorPage);
     }
     if (status == 500) {
-        strcpy(response, "HTTP/1.1 500 Bad Request\n"
+        strcpy(response, "HTTP/1.1 500 Internal Server Error\n"
                          "Content-length: 47\n"
                          "Content-Type: text/html; charset=ISO-8859-4\n"
                          "\n"
                          "500");
+        strcat(response, "\0");
     }
-
-    free(buffer);
 
     send(connected,response,sizeof(response),0);
 }

@@ -44,25 +44,34 @@ void readSettings(char file) {
                     continue; //skip to the next line
                 }
                 else {
-                    strcpy(setting, strtok(setting, "="));
-                    strcpy(content, &currentLine[strlen(setting) + 2]);
+                    strcpy(setting, strtok(setting, " = "));
+                    strcpy(content, &currentLine[strlen(setting) + 3]);
 
-                    printf("%s ", setting);
-                    printf("%s\n", content);
+                    printf("%s", setting);
+                    printf("%s", content);
                     if (strcmp(setting, "404") == 0) {
-                        strcpy(SETTINGS_ERROR_HANDLING_404, ENV_CWD)
+                        strncpy(SETTINGS_ERROR_HANDLING_404, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
+                        strcat(SETTINGS_ERROR_HANDLING_404, "\\");
+                        strncat(SETTINGS_ERROR_HANDLING_404, content, strlen(content) -1);
+                        SETTINGS_ERROR_HANDLING_404[strlen(SETTINGS_ERROR_HANDLING_404)+1] = "\0";
+                    }
+                    if (strcmp(setting, "500") == 0) {
+                        strncpy(SETTINGS_ERROR_HANDLING_500, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
+                        strcat(SETTINGS_ERROR_HANDLING_500, "\\");
+                        strncat(SETTINGS_ERROR_HANDLING_500, content, strlen(content) -1);
+                        SETTINGS_ERROR_HANDLING_500[strlen(SETTINGS_ERROR_HANDLING_500)+1] = "\0";
                     }
                 }
             }
 
             else {
-                strcpy(setting, strtok(setting, "="));
-                strcpy(content, &currentLine[strlen(setting) + 2]);
+                strcpy(setting, strtok(setting, " = "));
+                strcpy(content, &currentLine[strlen(setting) + 3]);
 
                 printf("%s ", setting);
                 printf("%s\n", content);
-                if (strcmp(setting, "ContentDirectory ") == 0) {
-                    strcpy(SETTINGS_CONTENT_ROOT, content);
+                if (strcmp(setting, "ContentDirectory") == 0) {
+                    strcat(SETTINGS_CONTENT_ROOT, content);
                     strcat(SETTINGS_CONTENT_ROOT_PATH, "\\");
                     strcat(SETTINGS_CONTENT_ROOT_PATH, SETTINGS_CONTENT_ROOT);
                 }

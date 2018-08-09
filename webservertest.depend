@@ -136,3 +136,63 @@
 
 1533835684 c:\webservertest\ena\init\init.h
 
+1533647966 source:c:\enalang\ena\globals.c
+
+1533484266 source:c:\enalang\ena\httphandle\event.c
+	<winsock2.h>
+	<stdlib.h>
+	<string.h>
+	"get/handleGet.h"
+	"post/handlePost.h"
+
+1533476928 c:\enalang\ena\httphandle\get\handleget.h
+
+1533469222 c:\enalang\ena\httphandle\post\handlepost.h
+
+1533838692 source:c:\enalang\ena\httphandle\get\handleget.c
+	<winsock2.h>
+	<dirent.h>
+	<unistd.h>
+	<stdio.h>
+	<limits.h>
+	<setjmp.h>
+	"../../globals.h"
+
+1533835679 c:\enalang\ena\globals.h
+	<limits.h>
+
+1533476586 source:c:\enalang\ena\httphandle\post\handlepost.c
+
+1533484482 source:c:\enalang\ena\init\build\buildfiletree.c
+
+1533835789 source:c:\enalang\main.c
+	<winsock2.h>
+	<sys/types.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<unistd.h>
+	<errno.h>
+	"Ena/httpHandle/event.h"
+	"Ena/globals.h"
+	"Ena/init/init.h"
+
+1533476858 c:\enalang\ena\httphandle\event.h
+
+1533835684 c:\enalang\ena\init\init.h
+
+1533836254 source:c:\enalang\ena\init\init.c
+	"settings/settingsParser.h"
+	"../globals.h"
+
+1533835668 c:\enalang\ena\init\settings\settingsparser.h
+
+1533838146 source:c:\enalang\ena\init\settings\settingsparser.c
+	<dirent.h>
+	<unistd.h>
+	<stdio.h>
+	<stdlib.h>
+	<limits.h>
+	<string.h>
+	"../../globals.h"
+
