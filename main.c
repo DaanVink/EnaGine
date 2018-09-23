@@ -15,6 +15,8 @@ void server();
 int main() {
     init();
     while(1) {
+        //TODO: create thread pool
+        //TODO: add img and json support to http response
         initSocket();
         server();
         clean();
@@ -81,10 +83,19 @@ void server() {
     //struct TempData *data = malloc(sizeof(struct TempData));
     //data->connected, connected;
     //data->sock, sock;
+    long nbytes;
+    char request[9999];
+    nbytes = recv(sock,request,sizeof(request),0);
+    send(sock, "HTTP/1.0 200 OK\r\nContent-Type: image/png\r\n\r\n", strlen("HTTP/1.0 200 OK\r\nContent-Type: image/png\r\n\r\n"), 0);
 
-    eventThread(connected, sock);
+    /* send file in 8KB block - last block may be smaller */
+    FILE* fp;
+    unsigned static char buffer[256];
+    fp = fopen("C:\\public_html\\index.png", "rb");
+    while ((nbytes = fread(buffer, 1, 255, fp)) > 0)
+    {
+        send(sock, buffer, nbytes, 0);
+    }
     //CreateThread(NULL, 0, eventThread2, data, 0, NULL);
-
-    WSACleanup();
     close(sock);
 }

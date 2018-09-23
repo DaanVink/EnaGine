@@ -1,6 +1,7 @@
 #include <winsock2.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "get/handleGet.h"
 #include "post/handlePost.h"
@@ -12,13 +13,16 @@ struct TempData {
 
 };
 
-void eventThread(int connected, int sock) {
+void eventThread(SOCKET sock) {
+
     char request[9999];
     char method[4];
     char fileRequest[1024];
-    recv(connected,request,sizeof(request),0);
+    long nbytes;
+
+    nbytes = recv(sock,request,sizeof(request),0);
     strncpy(method, request, 4);
-    printf("%s", request);
+    //printf("%s", request);
 
     int pos_search = 0;
     int pos_text = 0;
@@ -50,33 +54,15 @@ void eventThread(int connected, int sock) {
     //printf("%d\n", fileRequestOffset);
     memcpy(fileRequest, &request[4], fileRequestOffset);
     fileRequest[fileRequestOffset - 4] = '\0';
-    printf("%s\n", fileRequest);
+    //printf("%s\n", fileRequest);
 
     if (strcmp(method, "GET ")) {
-        printf("get\n");
-        HandleGet(connected, sock, fileRequest);
+        //printf("get\n");
+        HandleGet(sock, fileRequest, nbytes);
     }
 
     else if (strcmp(method, "POST")) {
-        printf("post\n");
+        //printf("post\n");
     }
 
-}
-
-void eventThread2(LPVOID ArgumentData) {
-
-    struct TempData *data = (struct TempData *)ArgumentData;
-
-    char request[9999];        printf("%s",request);
-    char response[9999];
-    int connected = data->connected;
-    SOCKET sock = data->sock;
-    recv(connected,request,sizeof(request),0);
-    printf("%s",request);
-
-    strcpy(response, "HTTP/1.1 200 OK\nContent-length: 47\nContent-Type: text/html\n\n<html>test</html>");
-    int status=send(connected,response,sizeof(response),0);
-    printf("%d", status, request);
-    WSACleanup();
-    close(sock);
 }

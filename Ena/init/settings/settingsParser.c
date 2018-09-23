@@ -27,19 +27,23 @@ void readSettings(char file) {
 
         while (fgets(currentLine, line_size, settingsFile) != NULL)  {
 
-            char* setting[256];
+            char setting[256];
             strcpy(setting, currentLine);
-            char* content[256];
+            char content[256];
 
-            if (strcmp(setting, "+ErrorHandling\n") == 0) {
+            if (strcmp(setting, "\n") == 0) {
+                continue; //this line is empty
+            }
+
+            else if (strcmp(setting, "+ErrorHandling\n") == 0) {
                 procErrorHandling = 1;
-                printf("start\n");
+                //printf("start\n");
                 continue; //skip to the next line
             }
 
-            if (procErrorHandling) {
+            else if (procErrorHandling) {
                 if (strcmp(setting, "-ErrorHandling\n") == 0) {
-                    printf("end\n");
+                    //printf("end\n");
                     procErrorHandling = 0;
                     continue; //skip to the next line
                 }
@@ -47,8 +51,8 @@ void readSettings(char file) {
                     strcpy(setting, strtok(setting, " = "));
                     strcpy(content, &currentLine[strlen(setting) + 3]);
 
-                    printf("%s", setting);
-                    printf("%s", content);
+                    //printf("%s", setting);
+                    //printf("%s", content);
                     if (strcmp(setting, "404") == 0) {
                         strncpy(SETTINGS_ERROR_HANDLING_404, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
                         strcat(SETTINGS_ERROR_HANDLING_404, "\\");
@@ -68,12 +72,39 @@ void readSettings(char file) {
                 strcpy(setting, strtok(setting, " = "));
                 strcpy(content, &currentLine[strlen(setting) + 3]);
 
-                printf("%s ", setting);
-                printf("%s\n", content);
+                //printf("%s ", setting);
+                //printf("%s\n", content);
                 if (strcmp(setting, "ContentDirectory") == 0) {
                     strcat(SETTINGS_CONTENT_ROOT, content);
                     strcat(SETTINGS_CONTENT_ROOT_PATH, "\\");
                     strcat(SETTINGS_CONTENT_ROOT_PATH, SETTINGS_CONTENT_ROOT);
+                }
+
+                else if (strcmp(setting, "DefaultFile") == 0) {
+                    strncpy(SETTINGS_CONTENT_DEFAULT_FILE, content, strlen(content) - 1);
+                }
+
+                else if (strcmp(setting, "FileBufferSize") == 0) {
+                    SETTINGS_FILE_BUFFER_SIZE = atoi(content);
+                }
+                else if (strcmp(setting, "URLBufferSize") == 0) {
+                    SETTINGS_URL_BUFFER_SIZE = atoi(content);
+                }
+                else if (strcmp(setting, "URLDataBufferSize") == 0) {
+                    SETTINGS_URL_DATA_BUFFER_SIZE = atoi(content);
+                }
+
+                else if (strcmp(setting, "DisplayDirectoryIndex") == 0) {
+                    if (strcmp(content, "true\n") == 0) {
+                        SETTINGS_ERROR_DISPLAY_INDEX_ON_EMPTY_DIR = 1;
+                    }
+                    else if (strcmp(content, "false\n") == 0) {
+                        SETTINGS_ERROR_DISPLAY_INDEX_ON_EMPTY_DIR = 0;
+                    }
+                    else {
+                        SETTINGS_ERROR_DISPLAY_INDEX_ON_EMPTY_DIR = 1;
+                        printf("Invalid case for DisplayDirectoryIndex in config. Defaulting to true");
+                    }
                 }
             }
         }

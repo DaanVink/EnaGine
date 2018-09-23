@@ -1,0 +1,4 @@
+png|image/png
+jpg|image/jpg
+jpeg|image/jpeg
+bin|data/bin
