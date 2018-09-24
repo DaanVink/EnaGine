@@ -10,7 +10,18 @@
 #include "Ena/globals.h"
 #include "Ena/init/init.h"
 
-void server();
+int main() {
+    printf("test123");
+    init();
+    while(1) {
+        //TODO: create thread pool
+        //TODO: add img and json support to http response
+        initSocket();
+        server();
+        clean();
+    }
+    return 0;
+}
 
 void initSocket() {
 
@@ -87,16 +98,4 @@ void server() {
     }
     //CreateThread(NULL, 0, eventThread2, data, 0, NULL);
     close(sock);
-}
-
-int main() {
-    init();
-    while(1) {
-        //TODO: create thread pool
-        //TODO: add img and json support to http response
-        initSocket();
-        server();
-        clean();
-    }
-    return 0;
 }

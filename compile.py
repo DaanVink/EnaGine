@@ -10,7 +10,7 @@ if (sys.argv[1] == "c"):
 		for line in file:
 			os.system('mingw32-gcc -g -c "' + cwd + line[:-1] + '" -o "' + cwd + "obj/" + line[:-2] + 'o"')
 elif (sys.argv[1] == "o"):
-	comp = "g++ -o"
+	comp = "g++ -o " + sys.argv[2]
 	with open("fileList.txt") as file:
 		for line in file:
 			comp += " obj/" + line[:-2] + "o"

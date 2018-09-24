@@ -1,5 +1,5 @@
 {
     "code-runner.executorMap": {
-        "c": "cd $dir && gcc -g $fileName -o $fileNameWithoutExt -lws2_32 && $dir$fileNameWithoutExt",
+        "c": "cd $dir && python compile.py c && python compile.py o build.exe && build.exe",
     }
 }
