@@ -12,18 +12,6 @@
 
 void server();
 
-int main() {
-    init();
-    while(1) {
-        //TODO: create thread pool
-        //TODO: add img and json support to http response
-        initSocket();
-        server();
-        clean();
-    }
-    return 0;
-}
-
 void initSocket() {
 
     WSADATA wsaData;
@@ -42,7 +30,8 @@ void clean() {
 }
 
 void server() {
-    int sock, connected, true = 1;
+    int sock, connected;
+    const char* always;
 
     struct sockaddr_in server_addr,client_addr;
     int sin_size;
@@ -52,7 +41,7 @@ void server() {
         exit(1);
     }
 
-    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int)) == -1) {
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, always, sizeof(int)) == -1) {
         perror("Setsockopt");
         exit(1);
     }
@@ -98,4 +87,16 @@ void server() {
     }
     //CreateThread(NULL, 0, eventThread2, data, 0, NULL);
     close(sock);
+}
+
+int main() {
+    init();
+    while(1) {
+        //TODO: create thread pool
+        //TODO: add img and json support to http response
+        initSocket();
+        server();
+        clean();
+    }
+    return 0;
 }
