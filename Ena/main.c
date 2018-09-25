@@ -6,9 +6,9 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "Ena/httpHandle/event.h"
-#include "Ena/globals.h"
-#include "Ena/init/init.h"
+#include "httpHandle/event.h"
+#include "globals.h"
+#include "init/init.h"
 
 int main() {
     printf("test123");

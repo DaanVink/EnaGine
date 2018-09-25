@@ -1,9 +1,11 @@
-import argparse
+import json
+from pprint import pprint
 
-parser = argparse.ArgumentParser()
+data = json.loads("{}")
 
-parser.add_argument("-test", action = "store_true")
+data["test"] = "test"
+data["test1"] = "test1"
+data["test2"] = "test2"
 
-args = parser.parse_args()
-
-print(args.test)
+pprint(data)
+print(data)
