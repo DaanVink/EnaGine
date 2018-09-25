@@ -1,4 +1,5 @@
 bin/
 obj/
 root/
-.vscode
+*.exe
+*.json

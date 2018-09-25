@@ -6,13 +6,12 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "Ena/httpHandle/event.h"
-#include "Ena/globals.h"
-#include "Ena/init/init.h"
-
-void server();
+#include "httpHandle/event.h"
+#include "globals.h"
+#include "init/init.h"
 
 int main() {
+    printf("test123");
     init();
     while(1) {
         //TODO: create thread pool
@@ -42,7 +41,8 @@ void clean() {
 }
 
 void server() {
-    int sock, connected, true = 1;
+    int sock, connected;
+    const char* always;
 
     struct sockaddr_in server_addr,client_addr;
     int sin_size;
@@ -52,7 +52,7 @@ void server() {
         exit(1);
     }
 
-    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int)) == -1) {
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, always, sizeof(int)) == -1) {
         perror("Setsockopt");
         exit(1);
     }
