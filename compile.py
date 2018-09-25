@@ -94,11 +94,9 @@ for file in files:
 
 compiler_assembly += " -lws2_32"
 if args.ghost:
-	print("\n")
 	print(compiler_assembly)
 else:
 	system(compiler_assembly)
 	
-pprint(jsonFiles)
-with open("prev.json") as out:
+with open("prev.json", "w") as out:
 	json.dump(jsonFiles, out)
