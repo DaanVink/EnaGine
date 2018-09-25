@@ -26,6 +26,6 @@ This project is licensed under the GNU GENERAL PUBLIC LICENSE License - see the 
 
 1. Fork it (<https://github.com/EnaProject/EnaGine/master>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
+3. Commit your changes (`git commit -m 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
