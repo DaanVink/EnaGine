@@ -3,4 +3,4 @@ obj/
 root/
 *.exe
 *.json
-!.vscode
+!.vscode/*
