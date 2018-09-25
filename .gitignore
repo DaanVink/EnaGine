@@ -3,4 +3,5 @@ obj/
 root/
 #.vscode
 .temp
-prev.files
+prev.json
+*.exe

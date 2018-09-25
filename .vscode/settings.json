@@ -1,5 +1,5 @@
 {
     "code-runner.executorMap": {
-        "c": "cd $dir && python compile.py c && python compile.py o build.exe && build.exe",
+        "c": "cd $dir && cd .. && python compile.py -obj obj -exe test.exe -compile_all && test.exe"
     }
 }
