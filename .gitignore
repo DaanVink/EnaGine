@@ -3,7 +3,3 @@ obj/
 root/
 *.exe
 *.json
-*.json
-build.exe
-*.exe
-*.exe
