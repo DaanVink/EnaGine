@@ -1,5 +1,5 @@
 from subprocess import call
-from os import walk, getcwd, system, path, makedirs
+from os import walk, getcwd, system, path, makedirs, remove
 from filecmp import cmp
 import argparse
 from shutil import rmtree
@@ -29,6 +29,10 @@ if args.obj[-1] != "/":
 if args.exe[-1] != " ":
 	args.exe += " "
 
+try:
+	remove(args.exe)
+except:
+	pass
 
 cwd = getcwd()
 cwd += "/"
@@ -36,7 +40,7 @@ cwd = cwd.replace("\\", "/")
 cwdLen = len(cwd)
 
 
-compiler_c = "gcc -w -g " # This is the compiler that compiles the c code to assembly
+compiler_c = "gcc -Wno-incompatible-pointer-types -g " # This is the compiler that compiles the c code to assembly
 compiler_assembly = "g++ -o " + args.exe # This is the compiler that compiles the assembly code to an executable
 
 

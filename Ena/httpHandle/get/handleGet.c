@@ -11,7 +11,9 @@
 
 #define BUFSIZE 255
 
-void HandleGet (SOCKET sock, char fileRequest[], long tempLong) {
+void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
+
+    printf("[handleGet.c:HandleGet] Succcesfully received request\n");
 
     int status = 200;
     int isText = 1;
@@ -38,12 +40,35 @@ void HandleGet (SOCKET sock, char fileRequest[], long tempLong) {
 
     int requestIsFolder = 0;
 
+    printf("[handleGet.c:HandleGet] Finished setting up for request\n");
+
+    printf("[handleGet.c:HandleGet] fileRequest is: \n");
+    printf(fileRequest);
+    printf("\n");
+
     strcpy(URLPath, "");
     strncat(URLPath, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
 
-    strcpy(URLTempPath, strtok(fileRequest, "?"));
+    printf(fileRequest);
+    printf("test1");
+    strtok(fileRequest, "?");
+    printf("test2");
+    strcpy(URLTempPath, fileRequest);
+
+    printf("[handleGet.c:HandleGet] Path is:");
+    printf(fileRequest);
+    printf("\n");
+
     strcpy(URLData, &fileRequest[strlen(URLPath) + 1]);
     strcat(URLPath, URLTempPath);
+
+    printf("[handleGet.c:HandleGet] URL data is: ");
+    printf(URLData);
+    printf("\n");
+
+    printf("[handleGet.c:HandleGet] Path to requested data is: ");
+    printf(URLPath);
+    printf("\n");
 
     token = strtok(URLTempPath, ".");
     while (token != NULL) {
@@ -51,7 +76,7 @@ void HandleGet (SOCKET sock, char fileRequest[], long tempLong) {
         token = strtok(NULL, ".");
     }
     strcpy(fileType, URLTempType);
-    typeResolve(httpType, fileType);
+    //typeResolve(httpType, fileType);
     char temptype[4];
     strncpy(temptype, httpType, 4);
     if (strcmp(temptype, "text") != 0) {
@@ -139,17 +164,7 @@ void HandleGet (SOCKET sock, char fileRequest[], long tempLong) {
 
     printf(response);
     send(sock, response, sizeof(response), 0);
-
-    if (canRead && isText == 0) {
-        printf("BUFFER");
-        unsigned char *buf[BUFSIZE];
-        buf[0] = '\0';
-        fp = fopen(URLPath, "rb");
-        while ((tempLong = fread(buf, 1, BUFSIZE, fp)) > 0)
-        {
-            send(sock, buf, tempLong, 0);
-        }
-    }
+    close(sock);
 }
 
 void buildResponse(char* returnaddr[], char* status[], int length, char* type[], char* data[]) {
@@ -164,6 +179,6 @@ void buildResponse(char* returnaddr[], char* status[], int length, char* type[],
     strcat(returnaddr, type);
     strcat(returnaddr, "\n\n");
     strcat(returnaddr, data);
-    //returnaddr[strlen(returnaddr) - 1] = '\0';
+    returnaddr[strlen(returnaddr) - 1] = '\0';
 
 }

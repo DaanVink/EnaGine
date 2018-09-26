@@ -10,19 +10,6 @@
 #include "globals.h"
 #include "init/init.h"
 
-int main() {
-    printf("test123");
-    init();
-    while(1) {
-        //TODO: create thread pool
-        //TODO: add img and json support to http response
-        initSocket();
-        server();
-        clean();
-    }
-    return 0;
-}
-
 void initSocket() {
 
     WSADATA wsaData;
@@ -41,8 +28,8 @@ void clean() {
 }
 
 void server() {
-    int sock, connected;
-    const char* always;
+    SOCKET sock, connected = 0;
+    int true = 1;
 
     struct sockaddr_in server_addr,client_addr;
     int sin_size;
@@ -52,7 +39,7 @@ void server() {
         exit(1);
     }
 
-    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, always, sizeof(int)) == -1) {
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int)) == -1) {
         perror("Setsockopt");
         exit(1);
     }
@@ -60,7 +47,6 @@ void server() {
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(80);
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    //bzero(&(server_addr.sin_zero),8); --This is for POSIX based systems
     memset(&(server_addr.sin_zero),0,8);
         if (bind(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr))== -1)
     {
@@ -78,24 +64,27 @@ void server() {
 
 
     sin_size = sizeof(struct sockaddr_in);
+    printf("[main.c:server] Ready for request\n");
     connected = accept(sock, (struct sockaddr *)&client_addr,&sin_size);
+    printf("[main.c:server] Inbound request\n");
+    printf("[main.c:server] Sending request to (event.c:eventThread)\n");
+    
+    eventThread(connected);
 
-    //struct TempData *data = malloc(sizeof(struct TempData));
-    //data->connected, connected;
-    //data->sock, sock;
-    long nbytes;
-    char request[9999];
-    nbytes = recv(sock,request,sizeof(request),0);
-    send(sock, "HTTP/1.0 200 OK\r\nContent-Type: image/png\r\n\r\n", strlen("HTTP/1.0 200 OK\r\nContent-Type: image/png\r\n\r\n"), 0);
-
-    /* send file in 8KB block - last block may be smaller */
-    FILE* fp;
-    unsigned static char buffer[256];
-    fp = fopen("C:\\public_html\\index.png", "rb");
-    while ((nbytes = fread(buffer, 1, 255, fp)) > 0)
-    {
-        send(sock, buffer, nbytes, 0);
-    }
-    //CreateThread(NULL, 0, eventThread2, data, 0, NULL);
     close(sock);
 }
+
+int main() {
+    printf("[main.c:main] Starting server\n");
+    printf("[main.c:main] Initialising\n");
+    init();
+    printf("[main.c:main] Init finished\n");
+    while(1) {
+        //TODO: create thread pool
+        //TODO: add img and json support to http response
+        initSocket();
+        server();
+        clean();
+    }
+    return 0;
+}   

@@ -13,16 +13,16 @@ struct TempData {
 
 };
 
-void eventThread(SOCKET sock) {
-
+void eventThread(int sock) {
+    printf("[event.c:eventThread] Succesfully received request\n");
     char request[9999];
     char method[4];
     char fileRequest[1024];
     long nbytes;
 
-    nbytes = recv(sock,request,sizeof(request),0);
+    recv(sock,request,sizeof(request), 0);
     strncpy(method, request, 4);
-    //printf("%s", request);
+    printf(request);
 
     int pos_search = 0;
     int pos_text = 0;
@@ -58,6 +58,8 @@ void eventThread(SOCKET sock) {
 
     if (strcmp(method, "GET ")) {
         //printf("get\n");
+        printf("[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)\n");
+        printf(fileRequest);
         HandleGet(sock, fileRequest, nbytes);
     }
 
