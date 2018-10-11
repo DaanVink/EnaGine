@@ -17,4 +17,9 @@ int SETTINGS_ERROR_DISPLAY_INDEX_ON_EMPTY_DIR;
 char SETTINGS_ERROR_HANDLING_404[PATH_MAX];
 char SETTINGS_ERROR_HANDLING_500[PATH_MAX];
 
+typedef struct {
+    char *ext;
+    char *type;
+} EXT_FINDER;
+
 #endif

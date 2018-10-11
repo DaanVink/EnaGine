@@ -1,5 +1,15 @@
 {
     "code-runner.executorMap": {
-        "c": "cd $dir && cd .. && python compile.py -obj obj -exe test.exe && cmd test.exe"
+        "c": "cd $dir && cd .. && python compile.py -obj obj -exe test.exe && test.exe"
+    },
+    "files.associations": {
+        "httptyperesolver.h\u0000olver.h": "c",
+        "httptyperesolver.h\u0000solver.h": "c",
+        "httptyperesolver.h\u0000yperesolver.h": "c",
+        "string.h": "c",
+        "handlepost.h": "c",
+        "init.h": "c",
+        "buildfiletree.h": "c",
+        "resolver.h": "c"
     }
 }

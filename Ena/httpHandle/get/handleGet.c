@@ -6,14 +6,31 @@
 
 #include "../../globals.h"
 #include "specialPages/index.h"
-#include "../../resolver.h"
+#include "../../httpTypeResolver.h"
 #include "../../fileIO.h"
+#include "../../log.h"
 
 #define BUFSIZE 255
 
+void buildResponse(char* returnaddr[], char* status[], int length, char* type[], char* data[]) {
+
+    char lengthBuffer[128];
+    strcpy(returnaddr, "HTTP/1.1 ");
+    strcat(returnaddr, status);
+    strcat(returnaddr, "\nContent-length: ");
+    sprintf(lengthBuffer, "%d", length);
+    strcat(returnaddr, lengthBuffer);
+    strcat(returnaddr, "\nContent-Type: ");
+    strcat(returnaddr, type);
+    strcat(returnaddr, "\n\n");
+    strcat(returnaddr, data);
+    returnaddr[strlen(returnaddr) - 1] = '\0';
+
+}
+
 void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
 
-    printf("[handleGet.c:HandleGet] Succcesfully received request\n");
+    printlog("[handleGet.c:HandleGet] Succcesfully received request\n");
 
     int status = 200;
     int isText = 1;
@@ -27,7 +44,7 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     char folderPath[SETTINGS_URL_BUFFER_SIZE];
 
     char URLTempType[SETTINGS_URL_BUFFER_SIZE];
-    char httpType[128] = "text/html";
+    char httpType[128];
     char fileType[128];
 
     char tempLen[8];
@@ -40,35 +57,31 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
 
     int requestIsFolder = 0;
 
-    printf("[handleGet.c:HandleGet] Finished setting up for request\n");
+    printlog("[handleGet.c:HandleGet] Finished setting up for request\n");
 
-    printf("[handleGet.c:HandleGet] fileRequest is: \n");
-    printf(fileRequest);
-    printf("\n");
+    printlog("[handleGet.c:HandleGet] fileRequest is: \n");
+    printlog(fileRequest);
+    printlog("\n");
 
     strcpy(URLPath, "");
     strncat(URLPath, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
 
-    printf(fileRequest);
-    printf("test1");
-    strtok(fileRequest, "?");
-    printf("test2");
-    strcpy(URLTempPath, fileRequest);
+    printlog(fileRequest);
 
-    printf("[handleGet.c:HandleGet] Path is:");
-    printf(fileRequest);
-    printf("\n");
+    printlog("[handleGet.c:HandleGet] Path is:");
+    printlog(fileRequest);
+    printlog("\n");
 
     strcpy(URLData, &fileRequest[strlen(URLPath) + 1]);
     strcat(URLPath, URLTempPath);
 
-    printf("[handleGet.c:HandleGet] URL data is: ");
-    printf(URLData);
-    printf("\n");
+    printlog("[handleGet.c:HandleGet] URL data is: ");
+    printlog(URLData);
+    printlog("\n");
 
-    printf("[handleGet.c:HandleGet] Path to requested data is: ");
-    printf(URLPath);
-    printf("\n");
+    printlog("[handleGet.c:HandleGet] Path to requested data is: ");
+    printlog(URLPath);
+    printlog("\n");
 
     token = strtok(URLTempPath, ".");
     while (token != NULL) {
@@ -76,7 +89,10 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
         token = strtok(NULL, ".");
     }
     strcpy(fileType, URLTempType);
-    //typeResolve(httpType, fileType);
+    typeResolve(httpType, fileType);
+    printlog("[handleGet.c:HandleGet] Found filetype ");
+    printlog(httpType);
+    printlog("\n");
     char temptype[4];
     strncpy(temptype, httpType, 4);
     if (strcmp(temptype, "text") != 0) {
@@ -114,8 +130,8 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
         if (requestIsFolder == 0) {
             //printf("Lapped 404\n");
             fp = fopen ( SETTINGS_ERROR_HANDLING_404 , "r" );
-            printf(SETTINGS_ERROR_HANDLING_404);
-            printf("\nTEST\n");
+            printlog(SETTINGS_ERROR_HANDLING_404);
+            printlog("\nTEST\n");
             if( !fp ) perror(SETTINGS_ERROR_HANDLING_404);
 
             fseek( fp , 0L , SEEK_END);
@@ -143,8 +159,8 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     if (status == 500) {
         //printf("Lapped 500\n");
         fp = fopen ( SETTINGS_ERROR_HANDLING_500 , "r" );
-        printf(SETTINGS_ERROR_HANDLING_500);
-        printf("\nTEST\n");
+        printlog(SETTINGS_ERROR_HANDLING_500);
+        printlog("\nTEST\n");
         if( !fp ) perror(SETTINGS_ERROR_HANDLING_500);
 
         fseek( fp , 0L , SEEK_END);
@@ -162,23 +178,7 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
         buildResponse(response, "500 Internal Server Error", strlen(errorPage), "text/html", errorPage);
     }
 
-    printf(response);
+    printlog(response);
     send(sock, response, sizeof(response), 0);
     close(sock);
-}
-
-void buildResponse(char* returnaddr[], char* status[], int length, char* type[], char* data[]) {
-
-    char lengthBuffer[128];
-    strcpy(returnaddr, "HTTP/1.1 ");
-    strcat(returnaddr, status);
-    strcat(returnaddr, "\nContent-length: ");
-    sprintf(lengthBuffer, "%d", length);
-    strcat(returnaddr, lengthBuffer);
-    strcat(returnaddr, "\nContent-Type: ");
-    strcat(returnaddr, type);
-    strcat(returnaddr, "\n\n");
-    strcat(returnaddr, data);
-    returnaddr[strlen(returnaddr) - 1] = '\0';
-
 }

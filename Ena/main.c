@@ -9,6 +9,7 @@
 #include "httpHandle/event.h"
 #include "globals.h"
 #include "init/init.h"
+#include "log.h"
 
 void initSocket() {
 
@@ -64,10 +65,10 @@ void server() {
 
 
     sin_size = sizeof(struct sockaddr_in);
-    printf("[main.c:server] Ready for request\n");
+    printlog("[main.c:server] Ready for request\n");
     connected = accept(sock, (struct sockaddr *)&client_addr,&sin_size);
-    printf("[main.c:server] Inbound request\n");
-    printf("[main.c:server] Sending request to (event.c:eventThread)\n");
+    printlog("[main.c:server] Inbound request\n");
+    printlog("[main.c:server] Sending request to (event.c:eventThread)\n");
     
     eventThread(connected);
 
@@ -75,10 +76,10 @@ void server() {
 }
 
 int main() {
-    printf("[main.c:main] Starting server\n");
-    printf("[main.c:main] Initialising\n");
+    printlog("[main.c:main] Starting server\n");
+    printlog("[main.c:main] Initialising\n");
     init();
-    printf("[main.c:main] Init finished\n");
+    printlog("[main.c:main] Init finished\n");
     while(1) {
         //TODO: create thread pool
         //TODO: add img and json support to http response
@@ -87,4 +88,4 @@ int main() {
         clean();
     }
     return 0;
-}   
+}

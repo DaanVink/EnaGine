@@ -5,6 +5,7 @@
 
 #include "get/handleGet.h"
 #include "post/handlePost.h"
+#include "../log.h"
 
 struct TempData {
 
@@ -14,7 +15,7 @@ struct TempData {
 };
 
 void eventThread(int sock) {
-    printf("[event.c:eventThread] Succesfully received request\n");
+    printlog("[event.c:eventThread] Succesfully received request\n");
     char request[9999];
     char method[4];
     char fileRequest[1024];
@@ -22,7 +23,8 @@ void eventThread(int sock) {
 
     recv(sock,request,sizeof(request), 0);
     strncpy(method, request, 4);
-    printf(request);
+    printlog(request);
+    printlog("\n");
 
     int pos_search = 0;
     int pos_text = 0;
@@ -40,7 +42,7 @@ void eventThread(int sock) {
             {
                 // match
                 fileRequestOffset = pos_text - len_search;
-                //printf("match from %d to %d\n",pos_text-len_search,pos_text);
+                //printlog("match from %d to %d\n",pos_text-len_search,pos_text);
                 break;
             }
         }
@@ -51,20 +53,21 @@ void eventThread(int sock) {
         }
     }
 
-    //printf("%d\n", fileRequestOffset);
+    //printlog("%d\n", fileRequestOffset);
     memcpy(fileRequest, &request[4], fileRequestOffset);
     fileRequest[fileRequestOffset - 4] = '\0';
-    //printf("%s\n", fileRequest);
+    //printlog("%s\n", fileRequest);
 
     if (strcmp(method, "GET ")) {
-        //printf("get\n");
-        printf("[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)\n");
-        printf(fileRequest);
+        //printlog("get\n");
+        printlog("[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)\n");
+        printlog(fileRequest);
+        printlog("\n");
         HandleGet(sock, fileRequest, nbytes);
     }
 
     else if (strcmp(method, "POST")) {
-        //printf("post\n");
+        //printlog("post\n");
     }
 
 }

@@ -1,12 +1,9 @@
-int getLogTracker() {
-    return 0;
-	
-}
+#include <string.h>
+#include <stdio.h>
 
-int getLogSession() {
-    return 0;
-}
-
-void addLogCase(int tracker) {
-
+void printlog(char* value[]) {
+    FILE *fp = fopen("log.txt", "a");
+    printf(value);
+    fputs(value, fp);
+    fclose(fp);
 }
