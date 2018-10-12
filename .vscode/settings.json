@@ -11,5 +11,6 @@
         "init.h": "c",
         "buildfiletree.h": "c",
         "resolver.h": "c"
-    }
+    },
+    "python.linting.enabled": false
 }
