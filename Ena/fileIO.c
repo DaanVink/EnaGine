@@ -4,6 +4,11 @@
 #include <string.h>
 #include "globals.h"
 
+typedef struct {
+    char *ext;
+    char *type;
+} EXT_FINDER;
+
 int IOCheckFolder(char* path[]) {
     DIR* dir = opendir(path);
     if (dir) {
@@ -13,7 +18,7 @@ int IOCheckFolder(char* path[]) {
     else {
         closedir(dir);
         return 0;
-    }
+}
 
 }
 

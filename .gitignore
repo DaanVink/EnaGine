@@ -1,6 +1,8 @@
 bin/
 obj/
+logs/
 root/
+log.txt
 *.exe
 *.json
 !.vscode/*

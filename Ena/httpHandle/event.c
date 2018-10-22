@@ -23,6 +23,8 @@ void eventThread(int sock) {
 
     recv(sock,request,sizeof(request), 0);
     strncpy(method, request, 4);
+    request[strlen(request) - 1] = '\0';
+    
     printlog(request);
     printlog("\n");
 

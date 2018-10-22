@@ -10,6 +10,7 @@
         "handlepost.h": "c",
         "init.h": "c",
         "buildfiletree.h": "c",
-        "resolver.h": "c"
+        "resolver.h": "c",
+        "globals.h": "c"
     }
 }

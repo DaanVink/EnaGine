@@ -7,7 +7,22 @@
 
 #include "../../globals.h"
 
+typedef struct {
+    char *setting;
+    int *var;
+    char *type;
+} proto_settings_dict;
+
 void readSettings(char file) {
+
+    proto_settings_dict SettingsDict[] = {
+    {"FileBufferSize", &SETTINGS_FILE_BUFFER_SIZE, "int" },
+    {"URLBufferSize", &SETTINGS_URL_BUFFER_SIZE, "int"},
+    {"URLDataBufferSize", &SETTINGS_URL_DATA_BUFFER_SIZE, "int"},
+    {"DebugLevel", &SETTINGS_DEBUG_LEVEL, "int"},
+    {"DisplayDirectoryIndex", &SETTINGS_ERROR_DISPLAY_INDEX_ON_EMPTY_DIR, "switch"},
+    {0,0,0}
+    };
 
     FILE *settingsFile;
     int procErrorHandling = 0;
@@ -35,14 +50,14 @@ void readSettings(char file) {
                 continue; //this line is empty
             }
 
-            else if (strcmp(setting, "+ErrorHandling\n") == 0) {
+            else if (strcmp(setting, "<ErrorHandling>\n") == 0) {
                 procErrorHandling = 1;
                 //printf("start\n");
                 continue; //skip to the next line
             }
 
             else if (procErrorHandling) {
-                if (strcmp(setting, "-ErrorHandling\n") == 0) {
+                if (strcmp(setting, "</ErrorHandling>\n") == 0) {
                     //printf("end\n");
                     procErrorHandling = 0;
                     continue; //skip to the next line
@@ -72,39 +87,40 @@ void readSettings(char file) {
                 strcpy(setting, strtok(setting, " = "));
                 strcpy(content, &currentLine[strlen(setting) + 3]);
 
-                //printf("%s ", setting);
-                //printf("%s\n", content);
+                int found = 0;
+                int index = 0;
+                while (found == 0) {
+                    if (SettingsDict[index].setting == 0) {
+                        break; // end of dict
+                    }
+                    else if (strcmp(setting, SettingsDict[index].setting) == 0) {
+                        if (strcmp(SettingsDict[index].type, "int") == 0) {
+                            *SettingsDict[index].var = atoi(content);
+                        }
+                        else if (strcmp(SettingsDict[index].type, "switch") == 0) {
+                            for(int i = 0; content[i]; i++){ //convert content to lowercase
+                                content[i] = tolower(content[i]);
+                            }
+                            if (strcmp(content, "true") == 0 || strcmp(content, "1")) {
+                                *SettingsDict[index].var = 1;
+                            }
+                            if (strcmp(content, "false") == 0 || strcmp(content, "0")) {
+                                *SettingsDict[index].var = 0;
+                            }
+                            else {
+                                printlog("Invalid case for ");
+                                printlog(setting);
+                                printlog(" in config, defaulting to 0 \n")
+                                *SettingsDict[index].var = 0;
+                            }
+                        }
+                    }
+                    index++;
+                }
                 if (strcmp(setting, "ContentDirectory") == 0) {
                     strcat(SETTINGS_CONTENT_ROOT, content);
                     strcat(SETTINGS_CONTENT_ROOT_PATH, "\\");
                     strcat(SETTINGS_CONTENT_ROOT_PATH, SETTINGS_CONTENT_ROOT);
-                }
-
-                else if (strcmp(setting, "DefaultFile") == 0) {
-                    strncpy(SETTINGS_CONTENT_DEFAULT_FILE, content, strlen(content) - 1);
-                }
-
-                else if (strcmp(setting, "FileBufferSize") == 0) {
-                    SETTINGS_FILE_BUFFER_SIZE = atoi(content);
-                }
-                else if (strcmp(setting, "URLBufferSize") == 0) {
-                    SETTINGS_URL_BUFFER_SIZE = atoi(content);
-                }
-                else if (strcmp(setting, "URLDataBufferSize") == 0) {
-                    SETTINGS_URL_DATA_BUFFER_SIZE = atoi(content);
-                }
-
-                else if (strcmp(setting, "DisplayDirectoryIndex") == 0) {
-                    if (strcmp(content, "true\n") == 0) {
-                        SETTINGS_ERROR_DISPLAY_INDEX_ON_EMPTY_DIR = 1;
-                    }
-                    else if (strcmp(content, "false\n") == 0) {
-                        SETTINGS_ERROR_DISPLAY_INDEX_ON_EMPTY_DIR = 0;
-                    }
-                    else {
-                        SETTINGS_ERROR_DISPLAY_INDEX_ON_EMPTY_DIR = 1;
-                        printf("Invalid case for DisplayDirectoryIndex in config. Defaulting to true");
-                    }
                 }
             }
         }

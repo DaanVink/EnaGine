@@ -71,16 +71,13 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     printlog("[handleGet.c:HandleGet] Path is:");
     printlog(fileRequest);
     printlog("\n");
-
+    
+    strcpy(URLTempPath, strtok(fileRequest, "?"));
     strcpy(URLData, &fileRequest[strlen(URLPath) + 1]);
     strcat(URLPath, URLTempPath);
 
     printlog("[handleGet.c:HandleGet] URL data is: ");
     printlog(URLData);
-    printlog("\n");
-
-    printlog("[handleGet.c:HandleGet] Path to requested data is: ");
-    printlog(URLPath);
     printlog("\n");
 
     token = strtok(URLTempPath, ".");
@@ -90,6 +87,10 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     }
     strcpy(fileType, URLTempType);
     typeResolve(httpType, fileType);
+
+    printlog("[handleGet.c:HandleGet] Path to requested data is: ");
+    printlog(URLPath);
+    printlog("\n");
     printlog("[handleGet.c:HandleGet] Found filetype ");
     printlog(httpType);
     printlog("\n");
@@ -100,6 +101,9 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     }
 
     requestIsFolder = IOCheckFolder(URLPath);
+    printlog("[handleGet.c:HandleGet] requestIsFolder: ");
+    printf("%i", requestIsFolder);
+    printlog("\n");
     if (requestIsFolder) {
         strcpy(folderPath, URLPath);
         strcat(URLPath, SETTINGS_CONTENT_DEFAULT_FILE);
@@ -179,6 +183,7 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     }
 
     printlog(response);
+    printlog("\n");
     send(sock, response, sizeof(response), 0);
     close(sock);
 }
