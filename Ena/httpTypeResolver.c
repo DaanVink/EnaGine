@@ -1,60 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "resolver.h"
 #include "globals.h"
-
-void resolverInit() {
-
-    struct node *root;
-    root = malloc(sizeof(struct node));
-    struct node *conductor;
-    root->next = 0;
-    conductor = root;
-    GLOBAL_ROOT = root;
-    FILE* file;
-
-    file = fopen("EnaData/specialTypes.txt", "r");
-
-    char *currentLine = malloc(64);
-    while (fgets(currentLine, 64, file) != NULL)  {
-        char type[64];
-        strcpy(type, currentLine);
-        char resolved[64];
-
-        strcpy(type, strtok(type, "|"));
-        strcpy(resolved, &currentLine[strlen(type)]+1);
-
-        strcpy(conductor->type, type);
-        strcpy(conductor->resolved, resolved);
-
-        conductor->next = malloc(sizeof(struct node));
-        conductor = conductor->next;
-    }
-    conductor->next = 0;
-    conductor = GLOBAL_ROOT;
-}
 
 void typeResolve(char* returnaddr[], char* input[]) {
 
-    struct node *cond;
-    int found;
-    found = 1;
-    cond = GLOBAL_ROOT;
-    while (strcmp(cond->type, input) != 0) {
-        if (cond->next == 0) {
-            found = 0;
-            break;
+    EXT_FINDER WEB_EXTENSIONS[] ={
+    {"gif", "image/gif" },
+    {"txt", "text/plain" },
+    {"jpg", "image/jpg" },
+    {"jpeg","image/jpeg"},
+    {"png", "image/png" },
+    {"ico", "image/ico" },
+    {"zip", "image/zip" },
+    {"gz",  "image/gz"  },
+    {"tar", "image/tar" },
+    {"htm", "text/html" },
+    {"html","text/html" },
+    {"php", "text/html" },
+    {"pdf","application/pdf"},
+    {"zip","application/octet-stream"},
+    {"rar","application/octet-stream"},
+    {0,0} };
+
+    int found = 0;
+    int index = 0;
+    strcpy(returnaddr, "text/plain");
+    while (found == 0) {
+        if(WEB_EXTENSIONS[index].ext == "0") {
+            found = 1;
+            strcpy(returnaddr, "text/html");
+        }
+        if(strcmp(WEB_EXTENSIONS[index].ext, input) == 0) {
+            found = 1;
+            strcpy(returnaddr, "text/test");
         }
         else {
-            cond = cond->next;
+            found++;
         }
-    }
-    if (found == 1) {
-        strcpy(returnaddr, cond->resolved);
-    }
-    else {
-        return;
     }
 
 }

@@ -1,12 +1,12 @@
-int getLogTracker() {
-    return 0;
-	
-}
+#include <string.h>
+#include <stdio.h>
+#include <globals.h>
 
-int getLogSession() {
-    return 0;
-}
-
-void addLogCase(int tracker) {
-
+void printlog(char* value[], int mode = 0) {
+    if SETTINGS_DEBUG_LEVEL >= mode {
+        FILE *fp = fopen("log.txt", "a");
+        printf(value);
+        fputs(value, fp);
+        fclose(fp);
+    }
 }

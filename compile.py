@@ -1,11 +1,9 @@
-from subprocess import call
-from os import walk, getcwd, system, path, makedirs
-from filecmp import cmp
-import argparse
-from shutil import rmtree
-from hashlib import md5
-import json
-from pprint import pprint
+from subprocess import call # For executing the compiler in the shell
+from os import walk, getcwd, system, path, makedirs, remove # For interaction with the IO
+import argparse # For adding command line flags
+from shutil import rmtree # For recursively removing directories easily
+from hashlib import md5 # For creating file hashes
+import json # For storing file hashes in json
 
 
 def gethash(fname):
@@ -29,6 +27,10 @@ if args.obj[-1] != "/":
 if args.exe[-1] != " ":
 	args.exe += " "
 
+try:
+	remove(args.exe)
+except:
+	pass
 
 cwd = getcwd()
 cwd += "/"
@@ -36,8 +38,8 @@ cwd = cwd.replace("\\", "/")
 cwdLen = len(cwd)
 
 
-compiler_c = "gcc -w -g " # This is the compiler that compiles the c code to assembly
-compiler_assembly = "g++ -o " + args.exe # This is the compiler that compiles the assembly code to an executable
+compiler_c = "gcc -Wno-incompatible-pointer-types -g " # This is the compiler that compiles the c code to assembly
+assembler = "g++ -o " + args.exe # This is the compiler that compiles the assembly code to an executable
 
 
 files = []
@@ -48,7 +50,7 @@ try:
 	with open("prev.json") as f:
 		jsonFiles = json.load(f)
 		f.close()
-except (IOError, json.decoder.JSONDecodeError):
+except (IOError, ValueError):
 	jsonFiles = json.loads("{}")
 	f = open("prev.json", "w+")
 	f.close()
@@ -90,13 +92,13 @@ for file in changedFiles:
 		system(compiler_c +  '-c "' + file + '" -o "' + file[:cwdLen] + args.obj + file[cwdLen:-1] + 'o"')
 		
 for file in files:
-	compiler_assembly += cwd + args.obj + file[cwdLen:-1] + "o "
+	assembler += cwd + args.obj + file[cwdLen:-1] + "o "
 
-compiler_assembly += " -lws2_32"
+assembler += " -lws2_32"
 if args.ghost:
-	print(compiler_assembly)
+	print(assembler)
 else:
-	system(compiler_assembly)
+	system(assembler)
 	
 with open("prev.json", "w") as out:
 	json.dump(jsonFiles, out)

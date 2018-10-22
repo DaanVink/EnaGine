@@ -1,5 +1,6 @@
 {
     "code-runner.executorMap": {
-        "c": "cd $dir && cd .. && python compile.py -obj obj -exe test.exe -compile_all && test.exe"
-    }
+        "c": "cd $dir && cd .. && python compile.py -obj obj -exe test.exe && test.exe"
+    },
+    "python.linting.enabled": false,
 }

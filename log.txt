@@ -1,0 +1,32 @@
+[main.c:main] Init finished
+[main.c:server] Ready for request
+[main.c:server] Inbound request
+[main.c:server] Sending request to (event.c:eventThread)
+[event.c:eventThread] Succesfully received request
+GET / HTTP/1.1
+Host: localhost
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Cache-Control: max-age=0
+
+
+[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)
+/
+[handleGet.c:HandleGet] Succcesfully received request
+[handleGet.c:HandleGet] Finished setting up for request
+[handleGet.c:HandleGet] fileRequest is: 
+/
+/[handleGet.c:HandleGet] Path is:/
+[handleGet.c:HandleGet] URL data is: 
+[handleGet.c:HandleGet] Path to requested data is: c:\EnaGine\root
+[handleGet.c:HandleGet] Found filetype text/plain
+HTTP/1.1 200 Ok
+Content-length: 94
+Content-Type: text/html
+
+<h1> Index of /</h1><ul><li><a href='..'>..</a></li><li><a href='index.txt'>index.txt</a></li>[main.c:server] Ready for request
