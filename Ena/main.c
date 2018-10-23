@@ -65,27 +65,32 @@ void server() {
 
 
     sin_size = sizeof(struct sockaddr_in);
-    printlog("[main.c:server] Ready for request\n");
+    printlog("[main.c:server] Ready for request\n", 0);
     connected = accept(sock, (struct sockaddr *)&client_addr,&sin_size);
-    printlog("[main.c:server] Inbound request\n");
-    printlog("[main.c:server] Sending request to (event.c:eventThread)\n");
+    printlog("[main.c:server] Inbound request\n", 0);
+    printlog("[main.c:server] Sending request to (event.c:eventThread)\n", 0);
     
     eventThread(connected);
 
     close(sock);
+    printlog("[main.c:server] Closed thread\n", 0);
 }
 
 int main() {
-    printlog("[main.c:main] Starting server\n");
-    printlog("[main.c:main] Initialising\n");
+    printlog("[main.c:main] Starting server\n", 0);
+    printlog("[main.c:main] Initialising\n", 0);
     init();
-    printlog("[main.c:main] Init finished\n");
+    printlog("[main.c:main] Init finished\n", 0);
     while(1) {
         //TODO: create thread pool
         //TODO: add img and json support to http response
+        printlog("[main.c:main] Initialising socket\n", 1);
         initSocket();
+        printlog("[main.c:main] Waiting for request\n", 1);
         server();
+        printlog("[main.c:main] Cleaning\n", 1);
         clean();
+        printlog("==============================\n", 0);
     }
     return 0;
 }

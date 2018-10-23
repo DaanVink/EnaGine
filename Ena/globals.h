@@ -23,9 +23,4 @@ int SETTINGS_DEBUG_LEVEL;
 char SETTINGS_ERROR_HANDLING_404[PATH_MAX];
 char SETTINGS_ERROR_HANDLING_500[PATH_MAX];
 
-typedef struct {
-    char *ext;
-    char *type;
-} EXT_FINDER;
-
 #endif

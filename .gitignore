@@ -2,7 +2,7 @@ bin/
 obj/
 logs/
 root/
-log.txt
+*.txt
 *.exe
 *.json
 !.vscode/*

@@ -3,6 +3,11 @@
 #include <string.h>
 #include "globals.h"
 
+typedef struct {
+    char *ext;
+    char *type;
+} EXT_FINDER;
+
 void typeResolve(char* returnaddr[], char* input[]) {
 
     EXT_FINDER WEB_EXTENSIONS[] ={

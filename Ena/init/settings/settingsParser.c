@@ -4,8 +4,10 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "../../globals.h"
+#include "../../log.h"
 
 typedef struct {
     char *setting;
@@ -46,46 +48,40 @@ void readSettings(char file) {
             strcpy(setting, currentLine);
             char content[256];
 
+            strcpy(setting, strtok(setting, " = "));
+            strcpy(content, &currentLine[strlen(setting) + 3]);
+            strcpy(content, strtok(content, "\n"));
+
             if (strcmp(setting, "\n") == 0) {
                 continue; //this line is empty
             }
 
             else if (strcmp(setting, "<ErrorHandling>\n") == 0) {
                 procErrorHandling = 1;
-                //printf("start\n");
                 continue; //skip to the next line
             }
 
             else if (procErrorHandling) {
                 if (strcmp(setting, "</ErrorHandling>\n") == 0) {
-                    //printf("end\n");
                     procErrorHandling = 0;
                     continue; //skip to the next line
                 }
                 else {
-                    strcpy(setting, strtok(setting, " = "));
-                    strcpy(content, &currentLine[strlen(setting) + 3]);
 
-                    //printf("%s", setting);
-                    //printf("%s", content);
                     if (strcmp(setting, "404") == 0) {
                         strncpy(SETTINGS_ERROR_HANDLING_404, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
                         strcat(SETTINGS_ERROR_HANDLING_404, "\\");
-                        strncat(SETTINGS_ERROR_HANDLING_404, content, strlen(content) -1);
-                        SETTINGS_ERROR_HANDLING_404[strlen(SETTINGS_ERROR_HANDLING_404)+1] = "\0";
+                        strcat(SETTINGS_ERROR_HANDLING_404, content);
                     }
                     if (strcmp(setting, "500") == 0) {
                         strncpy(SETTINGS_ERROR_HANDLING_500, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
                         strcat(SETTINGS_ERROR_HANDLING_500, "\\");
-                        strncat(SETTINGS_ERROR_HANDLING_500, content, strlen(content) -1);
-                        SETTINGS_ERROR_HANDLING_500[strlen(SETTINGS_ERROR_HANDLING_500)+1] = "\0";
+                        strcat(SETTINGS_ERROR_HANDLING_500, content);
                     }
                 }
             }
 
             else {
-                strcpy(setting, strtok(setting, " = "));
-                strcpy(content, &currentLine[strlen(setting) + 3]);
 
                 int found = 0;
                 int index = 0;
@@ -101,16 +97,16 @@ void readSettings(char file) {
                             for(int i = 0; content[i]; i++){ //convert content to lowercase
                                 content[i] = tolower(content[i]);
                             }
-                            if (strcmp(content, "true") == 0 || strcmp(content, "1")) {
+                            if (strcmp(content, "true") == 0 || strcmp(content, "1") == 0) {
                                 *SettingsDict[index].var = 1;
                             }
-                            if (strcmp(content, "false") == 0 || strcmp(content, "0")) {
+                            else if (strcmp(content, "false") == 0 || strcmp(content, "0") == 0) {
                                 *SettingsDict[index].var = 0;
                             }
                             else {
-                                printlog("Invalid case for ");
-                                printlog(setting);
-                                printlog(" in config, defaulting to 0 \n")
+                                printlog("[settingsParser.c:readSettings] Invalid case for ", 0);
+                                printlog(setting, 0);
+                                printlog(" in config, defaulting to 0 \n", 0);
                                 *SettingsDict[index].var = 0;
                             }
                         }

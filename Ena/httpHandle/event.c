@@ -15,7 +15,7 @@ struct TempData {
 };
 
 void eventThread(int sock) {
-    printlog("[event.c:eventThread] Succesfully received request\n");
+    printlog("[event.c:eventThread] Succesfully received request\n", 1);
     char request[9999];
     char method[4];
     char fileRequest[1024];
@@ -25,8 +25,8 @@ void eventThread(int sock) {
     strncpy(method, request, 4);
     request[strlen(request) - 1] = '\0';
     
-    printlog(request);
-    printlog("\n");
+    //printlog(request, 2);
+    //printlog("\n", 2);
 
     int pos_search = 0;
     int pos_text = 0;
@@ -44,7 +44,6 @@ void eventThread(int sock) {
             {
                 // match
                 fileRequestOffset = pos_text - len_search;
-                //printlog("match from %d to %d\n",pos_text-len_search,pos_text);
                 break;
             }
         }
@@ -55,16 +54,12 @@ void eventThread(int sock) {
         }
     }
 
-    //printlog("%d\n", fileRequestOffset);
     memcpy(fileRequest, &request[4], fileRequestOffset);
     fileRequest[fileRequestOffset - 4] = '\0';
-    //printlog("%s\n", fileRequest);
 
     if (strcmp(method, "GET ")) {
         //printlog("get\n");
-        printlog("[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)\n");
-        printlog(fileRequest);
-        printlog("\n");
+        printlog("[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)\n", 0);
         HandleGet(sock, fileRequest, nbytes);
     }
 

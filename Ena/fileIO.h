@@ -2,7 +2,7 @@
 #define ENA_FILEIO
 
 int IOCheckFolder(char* path[]);
-void IOReadText(char* returnaddr[], int status, char* filename[]);
-void IOReadBinary(char* returnaddr[], int status, char* filename[]);
+void IOReadText(char* returnaddr[], char* IOStatus[], char* filename[]);
+void IOReadBinary(char* returnaddr[], char* IOStatus[], char* filename[]);
 
 #endif
