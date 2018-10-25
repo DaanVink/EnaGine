@@ -38,7 +38,7 @@ void typeResolve(char* returnaddr[], char* input[]) {
         }
         if(strcmp(WEB_EXTENSIONS[index].ext, input) == 0) {
             found = 1;
-            strcpy(returnaddr, "text/test");
+            strcpy(returnaddr, "text/plain");
         }
         else {
             found++;

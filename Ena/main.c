@@ -37,12 +37,12 @@ void server() {
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("Socket");
-        exit(1);
+        //exit(1);
     }
 
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int)) == -1) {
         perror("Setsockopt");
-        exit(1);
+        //exit(1);
     }
 
     server_addr.sin_family = AF_INET;
@@ -52,20 +52,17 @@ void server() {
         if (bind(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr))== -1)
     {
             perror("Unable to bind");
-            exit(1);
+            //exit(1);
         }
 
         if (listen(sock, 5) == -1)
     {
             perror("Listen");
-            exit(1);
+            //exit(1);
         }
 
-    fflush(stdout);
-
-
     sin_size = sizeof(struct sockaddr_in);
-    printlog("[main.c:server] Ready for request\n", 0);
+    fflush(stdout);
     connected = accept(sock, (struct sockaddr *)&client_addr,&sin_size);
     printlog("[main.c:server] Inbound request\n", 0);
     printlog("[main.c:server] Sending request to (event.c:eventThread)\n", 0);

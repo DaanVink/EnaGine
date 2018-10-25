@@ -38,6 +38,7 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     int canRead = 0;
 
     char response[SETTINGS_FILE_BUFFER_SIZE];
+    char errorPage[SETTINGS_FILE_BUFFER_SIZE];
     char fileBuffer[SETTINGS_FILE_BUFFER_SIZE];
     char URLData[SETTINGS_URL_DATA_BUFFER_SIZE];
     char URLPath[SETTINGS_URL_BUFFER_SIZE];
@@ -45,14 +46,13 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     char folderPath[SETTINGS_URL_BUFFER_SIZE];
 
     char URLTempType[SETTINGS_URL_BUFFER_SIZE];
-    char httpType[128];
-    char fileType[128];
+    char httpType[64];
+    char fileType[64];
 
     char tempLen[8];
 
     FILE *fp;
     char* buffer;
-    char* errorPage;
     char *token;
     long lSize;
 
@@ -108,7 +108,7 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
         if ( access( URLPath, F_OK ) != -1 ) {
             canRead = 1;
             if (isText) {
-                printf("ISTEXT");
+                printf("ISTEXT\n");
                 status = 200;
                 char IOStatus[5] = "0";
                 IOReadText(fileBuffer, IOStatus, URLPath);
@@ -145,20 +145,21 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     }
     else if (status == 404) {
         printlog("[handleGet.c:HandleGet] Entering 404 handler\n", 1);
-        if (requestIsFolder == 0) {
+        if (!requestIsFolder) {
             char IOStatus[5] = "0";
-            printlog("[handleGet.c:HandleGet] Generating 404 page\n", 1);
-            IOReadText(response, IOStatus, SETTINGS_ERROR_HANDLING_404);
-            if (strcmp(IOStatus, "500") == 0) {
+            IOReadText(errorPage, IOStatus, SETTINGS_ERROR_HANDLING_404);
+            if (strcmp(IOStatus, "404") == 0) {
                 printlog("[handleGet.c:HandleGet] Error in reading 404 page, falling back to hardcoded\n", 0);
                 buildResponse(response, "404 Not Found", strlen(page_404), "text/html", page_404);
             }
+            else if (strcmp(IOStatus, "500") == 0) {
+                status = 500;
+            }
             else {
-                fclose(fp);
                 buildResponse(response, "404 Not Found", strlen(errorPage), "text/html", errorPage);
             }
         }
-        else if (requestIsFolder == 1) {
+        else if (requestIsFolder) {
             printlog("[handleGet.c:HandleGet] Generating index page\n", 1);
             char indexPage[SETTINGS_FILE_BUFFER_SIZE];
             buildIndexPage(indexPage, folderPath, fileRequest);
@@ -172,10 +173,10 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
         if (requestIsFolder == 0) {
             char IOStatus[5] = "0";
             printlog("[handleGet.c:HandleGet] Generating 500 page\n", 1);
-            IOReadText(response, IOStatus, SETTINGS_ERROR_HANDLING_404);
+            IOReadText(response, IOStatus, SETTINGS_ERROR_HANDLING_500);
             if (strcmp(IOStatus, "500") == 0) {
                 printlog("[handleGet.c:HandleGet] Error in reading 500 page, falling back to hardcoded\n", 0);
-                buildResponse(response, "500 Internal Server Error", strlen(page_404), "text/html", page_404);
+                buildResponse(response, "500 Internal Server Error", strlen(page_500), "text/html", page_500);
             }
             else {
                 fclose(fp);
