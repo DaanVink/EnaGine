@@ -1,5 +1,9 @@
 {
     "code-runner.executorMap": {
         "c": "cd $workspaceRoot && python compile.py -obj obj -exe test.exe && test.exe"
+    },
+    "files.associations": {
+        "httptyperesolver.h": "c",
+        "httptyperesolver.h\u0000tptyperesolver.h": "c"
     }
 }

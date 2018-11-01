@@ -3,8 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "get/handleGet.h"
-#include "post/handlePost.h"
+#include "get/GetBuilder.h"
+#include "post/PostBuilder.h"
 #include "../log.h"
 
 struct TempData {

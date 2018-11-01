@@ -17,31 +17,29 @@ void typeResolve(char* returnaddr[], char* input[]) {
     {"jpeg","image/jpeg"},
     {"png", "image/png" },
     {"ico", "image/ico" },
-    {"zip", "image/zip" },
-    {"gz",  "image/gz"  },
-    {"tar", "image/tar" },
     {"htm", "text/html" },
     {"html","text/html" },
     {"php", "text/html" },
     {"pdf","application/pdf"},
     {"zip","application/octet-stream"},
     {"rar","application/octet-stream"},
+    {"gz",  "application/octet-stream"  },
+    {"tar", "application/octet-stream" },
     {0,0} };
 
-    int found = 0;
     int index = 0;
     strcpy(returnaddr, "text/plain");
-    while (found == 0) {
-        if(WEB_EXTENSIONS[index].ext == "0") {
-            found = 1;
+    while (1) {
+        if (WEB_EXTENSIONS[index].ext == 0) { 
             strcpy(returnaddr, "text/html");
+            break;
         }
-        if(strcmp(WEB_EXTENSIONS[index].ext, input) == 0) {
-            found = 1;
-            strcpy(returnaddr, "text/plain");
+        else if(strcmp(WEB_EXTENSIONS[index].ext, input) == 0) {
+            strcpy(returnaddr, WEB_EXTENSIONS[index].type);
+            break;
         }
         else {
-            found++;
+            index++;
         }
     }
 

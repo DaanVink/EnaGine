@@ -69,7 +69,6 @@ void server() {
     
     eventThread(connected);
 
-    close(sock);
     printlog("[main.c:server] Closed thread\n", 0);
 }
 

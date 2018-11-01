@@ -10,8 +10,7 @@
 #include "../../httpTypeResolver.h"
 #include "../../fileIO.h"
 #include "../../log.h"
-
-#define BUFSIZE 255
+#include "../request.h"
 
 void buildResponse(char* returnaddr[], char* status[], int length, char* type[], char* data[]) {
 
@@ -34,49 +33,51 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     printlog("[handleGet.c:HandleGet] Succcesfully received request\n", 0);
 
     int status = 200;
-    int isText = 1;
+    int isText = 0;
     int canRead = 0;
+    int contentSize = 0;
 
     char response[SETTINGS_FILE_BUFFER_SIZE];
     char errorPage[SETTINGS_FILE_BUFFER_SIZE];
-    char fileBuffer[SETTINGS_FILE_BUFFER_SIZE];
-    char URLData[SETTINGS_URL_DATA_BUFFER_SIZE];
-    char URLPath[SETTINGS_URL_BUFFER_SIZE];
-    char URLTempPath[SETTINGS_URL_BUFFER_SIZE];
     char folderPath[SETTINGS_URL_BUFFER_SIZE];
 
+    REQUEST request;
+
     char URLTempType[SETTINGS_URL_BUFFER_SIZE];
+    char URLTempPath[SETTINGS_URL_BUFFER_SIZE];
     char httpType[64];
     char fileType[64];
 
     char tempLen[8];
 
-    FILE *fp;
-    char* buffer;
     char *token;
+    char *buffer;
     long lSize;
 
     int requestIsFolder = 0;
 
     printlog("[handleGet.c:HandleGet] Finished setting up for request\n", 1);
 
-    printlog("[handleGet.c:HandleGet] fileRequest is: ", 1);
-    printlog(fileRequest, 1);
-    printlog("\n", 1);
+    strcpy(request.REQUESTQUERY, fileRequest);
 
-    strcpy(URLPath, "");
-    strncat(URLPath, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
+    strcpy(request.FILEPATH, "");
+    strncat(request.FILEPATH, SETTINGS_CONTENT_ROOT_PATH, strlen(SETTINGS_CONTENT_ROOT_PATH) - 1);
+    request.FILEPATH[strlen(request.FILEPATH)] = '\0';
+
+    strcpy(URLTempPath, strtok(request.REQUESTQUERY, "?"));
+    strcpy(request.REQUESTDATA, &request.REQUESTQUERY[strlen(request.REQUESTQUERY) + 1]);
+    strcat(request.FILEPATH, URLTempPath);
+
+    printlog("[handleGet.c:HandleGet] Relative path is:", 2);
+    printlog(request.REQUESTQUERY, 2);
+    printlog("\n", 2);
 
     printlog("[handleGet.c:HandleGet] Path is:", 2);
-    printlog(fileRequest, 2);
+    printlog(request.FILEPATH, 2);
     printlog("\n", 2);
-    
-    strcpy(URLTempPath, strtok(fileRequest, "?"));
-    strcpy(URLData, &fileRequest[strlen(URLPath) + 1]);
-    strcat(URLPath, URLTempPath);
 
     printlog("[handleGet.c:HandleGet] URL data is: ", 1);
-    printlog(URLData, 1);
+    printlog(request.REQUESTDATA, 1);
     printlog("\n", 1);
 
     token = strtok(URLTempPath, ".");
@@ -84,57 +85,47 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
         strcpy(URLTempType, token);
         token = strtok(NULL, ".");
     }
-    strcpy(fileType, URLTempType);
-    typeResolve(httpType, fileType);
+    strcpy(request.FILETYPE, URLTempType);
+    typeResolve(request.HTTPTYPE, request.FILETYPE);
 
-    printlog("[handleGet.c:HandleGet] Path to requested data is: ", 2);
-    printlog(URLPath, 2);
-    printlog("\n", 2);
-    printlog("[handleGet.c:HandleGet] Found filetype ", 2);
+    printlog("[handleGet.c:HandleGet] Found filetype: ", 2);
     printlog(httpType, 2);
     printlog("\n", 2);
+
     char temptype[4];
     strncpy(temptype, httpType, 4);
-    if (strcmp(temptype, "text") != 0) {
-        isText = 0;
+    temptype[4] = '\0';
+    if (strcmp(temptype, "text") == 0) {
+        isText = 1;
     }
 
-    requestIsFolder = IOCheckFolder(URLPath);
+    requestIsFolder = IOCheckFolder(request.FILEPATH);
     printlog("[handleGet.c:HandleGet] requestIsFolder: ", 2);
     if (requestIsFolder == 1) { printlog("true\n", 2); } 
     else { printlog("false\n", 2); }
 
     if (!requestIsFolder) {
-        if ( access( URLPath, F_OK ) != -1 ) {
-            canRead = 1;
-            if (isText) {
-                printf("ISTEXT\n");
-                status = 200;
-                char IOStatus[5] = "0";
-                IOReadText(fileBuffer, IOStatus, URLPath);
-                printf(IOStatus);
-                status = atoi(IOStatus);
-                buffer = fileBuffer;
-            }
+        if (IOCheckValid(request.FILEPATH)) {
+            status = 200;
         }
         else {
             status = 404;
         }
     }
     printf("%i", status);
-
+    strcpy(response, "test123");
     if (requestIsFolder) {
-        strcpy(folderPath, URLPath);
-        strcat(URLPath, SETTINGS_CONTENT_DEFAULT_FILE);
+        strcpy(request.FOLDERPATH, request.FILEPATH);
+        strcat(request.FILEPATH, SETTINGS_CONTENT_DEFAULT_FILE);
         printlog("[handleGet.c:HandleGet] Generating index page\n", 1);
         char indexPage[SETTINGS_FILE_BUFFER_SIZE];
-        buildIndexPage(indexPage, folderPath, fileRequest);
+        buildIndexPage(indexPage, request.FOLDERPATH, request.REQUESTQUERY);
         status = 200;
         buildResponse(response, "200 Ok", strlen(indexPage), "text/html", indexPage);
         indexPage[0] = '\0';
     }
 
-    else if (status == 200) {
+    if (status == 200) {
         printf("Lapped 200\n");
         if (isText) {
             buildResponse(response, "200 Ok", strlen(buffer), httpType, buffer);
@@ -179,7 +170,6 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
                 buildResponse(response, "500 Internal Server Error", strlen(page_500), "text/html", page_500);
             }
             else {
-                fclose(fp);
                 buildResponse(response, "500 Internal Server Error", strlen(errorPage), "text/html", errorPage);
             }
         }
@@ -196,4 +186,5 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     printlog(response, 2);
     printlog("\n", 2);
     send(sock, response, sizeof(response), 0);
+    close(sock);
 }
