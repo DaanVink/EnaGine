@@ -10,38 +10,16 @@
 #include "../../httpTypeResolver.h"
 #include "../../fileIO.h"
 #include "../../log.h"
+#include "../../tools.h"
 #include "../request.h"
 
-void buildResponse(char* returnaddr[], char* status[], int length, char* type[], char* data[]) {
-
-    char lengthBuffer[128];
-    strcpy(returnaddr, "HTTP/1.1 ");
-    strcat(returnaddr, status);
-    strcat(returnaddr, "\nContent-length: ");
-    sprintf(lengthBuffer, "%d", length);
-    strcat(returnaddr, lengthBuffer);
-    strcat(returnaddr, "\nContent-Type: ");
-    strcat(returnaddr, type);
-    strcat(returnaddr, "\n\n");
-    strcat(returnaddr, data);
-    returnaddr[strlen(returnaddr) - 1] = '\0';
-
-}
-
-void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
+void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
 
     printlog("[handleGet.c:HandleGet] Succcesfully received request\n", 0);
-
-    int status = 200;
-    int isText = 0;
-    int canRead = 0;
-    int contentSize = 0;
 
     char response[SETTINGS_FILE_BUFFER_SIZE];
     char errorPage[SETTINGS_FILE_BUFFER_SIZE];
     char folderPath[SETTINGS_URL_BUFFER_SIZE];
-
-    REQUEST request;
 
     char URLTempType[SETTINGS_URL_BUFFER_SIZE];
     char URLTempPath[SETTINGS_URL_BUFFER_SIZE];
@@ -53,8 +31,6 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     char *token;
     char *buffer;
     long lSize;
-
-    int requestIsFolder = 0;
 
     printlog("[handleGet.c:HandleGet] Finished setting up for request\n", 1);
 
@@ -89,54 +65,55 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     typeResolve(request.HTTPTYPE, request.FILETYPE);
 
     printlog("[handleGet.c:HandleGet] Found filetype: ", 2);
-    printlog(httpType, 2);
+    printlog(request.HTTPTYPE, 2);
     printlog("\n", 2);
 
     char temptype[4];
-    strncpy(temptype, httpType, 4);
+    strncpy(temptype, request.HTTPTYPE, 4);
     temptype[4] = '\0';
     if (strcmp(temptype, "text") == 0) {
-        isText = 1;
+        request.ISBINARY = 0;
+    }
+    else {
+        request.ISBINARY = 1;
     }
 
-    requestIsFolder = IOCheckFolder(request.FILEPATH);
-    printlog("[handleGet.c:HandleGet] requestIsFolder: ", 2);
-    if (requestIsFolder == 1) { printlog("true\n", 2); } 
+    request.ISFOLDER = IOCheckFolder(request.FILEPATH);
+    printlog("[handleGet.c:HandleGet] request.ISFOLDER: ", 2);
+    if (request.ISFOLDER == 1) { printlog("true\n", 2); } 
     else { printlog("false\n", 2); }
 
-    if (!requestIsFolder) {
+    if (!request.ISFOLDER) {
         if (IOCheckValid(request.FILEPATH)) {
-            status = 200;
+            request.STATUS = 200;
         }
         else {
-            status = 404;
+            request.STATUS = 404;
         }
     }
-    printf("%i", status);
-    strcpy(response, "test123");
-    if (requestIsFolder) {
+    if (request.ISFOLDER) {
         strcpy(request.FOLDERPATH, request.FILEPATH);
         strcat(request.FILEPATH, SETTINGS_CONTENT_DEFAULT_FILE);
         printlog("[handleGet.c:HandleGet] Generating index page\n", 1);
         char indexPage[SETTINGS_FILE_BUFFER_SIZE];
         buildIndexPage(indexPage, request.FOLDERPATH, request.REQUESTQUERY);
-        status = 200;
+        request.STATUS = 200;
         buildResponse(response, "200 Ok", strlen(indexPage), "text/html", indexPage);
         indexPage[0] = '\0';
     }
 
-    if (status == 200) {
+    if (request.STATUS == 200) {
         printf("Lapped 200\n");
-        if (isText) {
-            buildResponse(response, "200 Ok", strlen(buffer), httpType, buffer);
+        if (!request.ISBINARY) {
+            buildResponse(response, "200 Ok", strlen(buffer), request.HTTPTYPE, buffer);
         }
         else {
-            buildResponse(response, "200 Ok", 255, httpType, "");
+            buildResponse(response, "200 Ok", 255, request.HTTPTYPE, "");
         }
     }
-    else if (status == 404) {
+    else if (request.STATUS == 404) {
         printlog("[handleGet.c:HandleGet] Entering 404 handler\n", 1);
-        if (!requestIsFolder) {
+        if (!request.ISFOLDER) {
             char IOStatus[5] = "0";
             IOReadText(errorPage, IOStatus, SETTINGS_ERROR_HANDLING_404);
             if (strcmp(IOStatus, "404") == 0) {
@@ -144,24 +121,24 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
                 buildResponse(response, "404 Not Found", strlen(page_404), "text/html", page_404);
             }
             else if (strcmp(IOStatus, "500") == 0) {
-                status = 500;
+                request.STATUS = 500;
             }
             else {
                 buildResponse(response, "404 Not Found", strlen(errorPage), "text/html", errorPage);
             }
         }
-        else if (requestIsFolder) {
+        else if (request.ISFOLDER) {
             printlog("[handleGet.c:HandleGet] Generating index page\n", 1);
             char indexPage[SETTINGS_FILE_BUFFER_SIZE];
             buildIndexPage(indexPage, folderPath, fileRequest);
-            status = 200;
+            request.STATUS = 200;
             buildResponse(response, "200 Ok", strlen(indexPage), "text/html", indexPage);
             indexPage[0] = '\0';
         }
     }
-    if (status == 500) {
+    if (request.STATUS == 500) {
         printlog("[handleGet.c:HandleGet] Entering 500 handler\n", 1);
-        if (requestIsFolder == 0) {
+        if (request.ISFOLDER == 0) {
             char IOStatus[5] = "0";
             printlog("[handleGet.c:HandleGet] Generating 500 page\n", 1);
             IOReadText(response, IOStatus, SETTINGS_ERROR_HANDLING_500);
@@ -173,11 +150,11 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
                 buildResponse(response, "500 Internal Server Error", strlen(errorPage), "text/html", errorPage);
             }
         }
-        else if (requestIsFolder == 1) {
+        else if (request.ISFOLDER == 1) {
             printlog("[handleGet.c:HandleGet] Generating index page\n", 1);
             char indexPage[SETTINGS_FILE_BUFFER_SIZE];
             buildIndexPage(indexPage, folderPath, fileRequest);
-            status = 200;
+            request.STATUS = 200;
             buildResponse(response, "200 Ok", strlen(indexPage), "text/html", indexPage);
             indexPage[0] = '\0';
         }
@@ -187,4 +164,6 @@ void HandleGet (SOCKET sock, char* fileRequest[], long tempLong) {
     printlog("\n", 2);
     send(sock, response, sizeof(response), 0);
     close(sock);
+    
+    printlog("[handleGet.c:HandleGet] Returning to invoker", 1);
 }

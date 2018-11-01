@@ -4,6 +4,9 @@
     },
     "files.associations": {
         "httptyperesolver.h": "c",
-        "httptyperesolver.h\u0000tptyperesolver.h": "c"
+        "httptyperesolver.h\u0000tptyperesolver.h": "c",
+        "request.h\u0000quest.h": "c",
+        "request.h\u0000uest.h": "c",
+        "log.h": "c"
     }
 }

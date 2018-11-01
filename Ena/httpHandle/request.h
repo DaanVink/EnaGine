@@ -10,6 +10,9 @@ typedef struct {
     char FOLDERPATH[PATH_MAX];
     char FILETYPE[64];
     char HTTPTYPE[64];
+    int  STATUS;
+    int  ISBINARY;
+    int  ISFOLDER;
 } REQUEST;
 
 #endif
