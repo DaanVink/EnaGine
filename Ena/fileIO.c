@@ -73,7 +73,7 @@ void IOReadText(int* returnaddr, char* IOStatus[], char* filename[], int filesiz
             break;
         case 3:
             printlog("[fileIO.c:IOReadText] Error finding file\n", 2);
-            strcpy(IOStatus, "500");
+            strcpy(IOStatus, "404");
             break;
     }
 }

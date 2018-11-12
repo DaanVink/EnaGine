@@ -121,7 +121,7 @@ void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
                 buildResponse(response, "404 Not Found", strlen(page_404), "text/html", page_404);
             }
             else if (strcmp(IOStatus, "500") == 0) {
-                request.STATUS = 500;
+                buildResponse(response, "500 Not Found", strlen(errorPage), "text/html", page_500);
             }
             else {
                 buildResponse(response, "404 Not Found", strlen(errorPage), "text/html", errorPage);
