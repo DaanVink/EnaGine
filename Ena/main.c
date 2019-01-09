@@ -10,6 +10,7 @@
 #include "globals.h"
 #include "init/init.h"
 #include "log.h"
+#include "httpHandle/error.h"
 
 void initSocket() {
 

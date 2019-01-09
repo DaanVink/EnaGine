@@ -1,16 +1,3 @@
 [main.c:main] Init finished
 [main.c:main] Initialising socket
 [main.c:main] Waiting for request
-[main.c:server] Inbound request
-[main.c:server] Sending request to (event.c:eventThread)
-[event.c:eventThread] Succesfully received request
-[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)
-[handleGet.c:HandleGet] Succcesfully received request
-[handleGet.c:HandleGet] Finished setting up for request
-[handleGet.c:HandleGet] fileRequest is: /404.html1
-[handleGet.c:HandleGet] Path is:/404.html1
-[handleGet.c:HandleGet] URL data is: 
-[handleGet.c:HandleGet] Path to requested data is: c:\EnaGine\root/404.html1
-[handleGet.c:HandleGet] Found filetype text/plain
-[handleGet.c:HandleGet] requestIsFolder: false
-[handleGet.c:HandleGet] Entering 404 handler
