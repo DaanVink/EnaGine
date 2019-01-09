@@ -5,6 +5,14 @@
 #include "globals.h"
 #include "log.h"
 
+int IOGetSize(char* path[]) {
+    FILE *fp = fopen(path, "r");
+    fseek(fp, 0L, SEEK_END) == 0;
+    int size = ftell(fp);
+    fclose(fp);
+    return size;
+}
+
 int IOCheckFolder(char* path[]) {
     DIR* dir = opendir(path);
     if (dir) {
@@ -17,70 +25,56 @@ int IOCheckFolder(char* path[]) {
     }
 }
 
-void IOReadText(char* returnaddr[], char* IOStatus[], char* filename[]) {
+int IOCheckValid(char* path) {
+    if ( access( path, F_OK ) != -1 ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+int IOReadText(char* returnaddr[], char* filename[], int *requestsize) {
     FILE *fp = fopen ( filename , "r" );
-    char *buffer = NULL;
     long lSize;
     int status = 0;
-    if (fp != NULL) {
-        /* Go to the end of the file. */
-        if (fseek(fp, 0L, SEEK_END) == 0) {
-            /* Get the size of the file. */
-            long bufsize = ftell(fp);
-            if (bufsize == -1) { status = 1; }
 
-            /* Allocate our buffer to that size. */
-            buffer = malloc(sizeof(char) * (bufsize + 1));
+    fseek(fp, 0L, SEEK_END) == 0;
+    int filesize = ftell(fp);
+    if (filesize == 0) {status = 1;}
+    rewind(fp);
 
-            /* Go back to the start of the file. */
-            if (fseek(fp, 0L, SEEK_SET) != 0) { status = 2; }
+    *requestsize = filesize;
 
-            /* Read the entire file into memory. */
-            size_t newLen = fread(buffer, sizeof(char), bufsize, fp);
-            if ( ferror( fp ) != 0 ) {
-                status = 3;
-            } else {
-                buffer[newLen] = '\0';
-            }
-        } 
-        else {
-           status = 5;
+    if (fp != NULL && status == 0) {
+        /* Read the entire file into memory. */
+        size_t newSize = fread(returnaddr, 1, filesize, fp);
+        if ( ferror( fp ) != 0 ) {
+            status = 2;
         }
+        returnaddr[newSize - 1] = '\0';
         fclose(fp);
     }
     else {
-        status = 6;
+        status = 3;
     }
-    strcpy(returnaddr, buffer);
     switch (status) {
         case 0:
             printlog("[fileIO.c:IOReadText] OK\n", 2);
-            strcpy(IOStatus, "200");
+            return 200;
             break;
         case 1:
-            printlog("[fileIO.c:IOReadText] Error telling filesize\n", 2);
-            strcpy(IOStatus, "500");
-            break;
-        case 2:
             printlog("[fileIO.c:IOReadText] Error seeking file start\n", 2);
-            strcpy(IOStatus, "500");
-            break;
-        case 3:
+            return 500;
+        case 2:
             printlog("[fileIO.c:IOReadText] Error copying to buffer\n", 2);
-            strcpy(IOStatus, "500");
-            break;
-        case 4:
-            printlog("[fileIO.c:IOReadText] Error allocating buffer in memory\n", 2);
-            strcpy(IOStatus, "500");
-            break;
-        case 5:
-            printlog("[fileIO.c:IOReadText] Unable to find file", 2);
-            strcpy(IOStatus, "404");
-            break;
-        case 6:
-            printlog("[fileIO.c:IOReadText] OK", 2);
-            strcpy(IOStatus, "200");
-            break;
+            return 500;
+        case 3:
+            printlog("[fileIO.c:IOReadText] Error finding file\n", 2);
+            return 500;
+        default:
+            printlog("[fileIO.c:IOReadText] An unknown status code was returned\n", 2);
+            return 500;
     }
 }
 

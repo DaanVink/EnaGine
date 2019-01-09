@@ -10,6 +10,7 @@
 #include "globals.h"
 #include "init/init.h"
 #include "log.h"
+#include "httpHandle/error.h"
 
 void initSocket() {
 
@@ -23,12 +24,13 @@ void initSocket() {
     }
 }
 
-//function specific for windows-to be called after all socket communication is complete
+//function specific for windows. To be called after all socket communication is complete
 void clean() {
     WSACleanup();
 }
 
 void server() {
+    printlog("[main.c:server] Setting up\n", 1);
     SOCKET sock, connected = 0;
     int true = 1;
 
@@ -61,15 +63,16 @@ void server() {
             //exit(1);
         }
 
+    printlog("[main.c:server] Successfully bound to socket\n", 1);
+
     sin_size = sizeof(struct sockaddr_in);
-    fflush(stdout);
+    printlog("[main.c:server] Waiting for new connection\n", 1);
     connected = accept(sock, (struct sockaddr *)&client_addr,&sin_size);
     printlog("[main.c:server] Inbound request\n", 0);
     printlog("[main.c:server] Sending request to (event.c:eventThread)\n", 0);
     
     eventThread(connected);
 
-    close(sock);
     printlog("[main.c:server] Closed thread\n", 0);
 }
 
@@ -78,15 +81,17 @@ int main() {
     printlog("[main.c:main] Initialising\n", 0);
     init();
     printlog("[main.c:main] Init finished\n", 0);
-    while(1) {
+    for(;;) {
         //TODO: create thread pool
         //TODO: add img and json support to http response
         printlog("[main.c:main] Initialising socket\n", 1);
         initSocket();
         printlog("[main.c:main] Waiting for request\n", 1);
+        printlog("[main.c:main] Handing control to (main.c:server)\n", 1);
         server();
         printlog("[main.c:main] Cleaning\n", 1);
         clean();
+        printlog("[main.c:main] Killing current thread\n", 1);
         printlog("==============================\n", 0);
     }
     return 0;

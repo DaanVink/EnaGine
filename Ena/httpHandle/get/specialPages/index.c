@@ -4,10 +4,9 @@
 
 #include "../../../globals.h"
 
-void buildIndexPage(char inputPage[], char location[], char requestLocation[]) {
+int* buildIndexPage(char *page, int *len, char location[], char requestLocation[]) {
 
     struct dirent *ent;
-    char page[SETTINGS_FILE_BUFFER_SIZE];
     strcpy(page, "<h1> Index of ");
     strcat(page, requestLocation);
     strcat(page, "</h1><ul>");
@@ -31,7 +30,6 @@ void buildIndexPage(char inputPage[], char location[], char requestLocation[]) {
         /* could not open directory */
         perror ("");
     }
-    strcpy(inputPage, page);
-    inputPage[strlen(inputPage)] = '\0';
-
-}
+    len = strlen(page);
+    return len;
+}   

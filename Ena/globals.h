@@ -2,6 +2,7 @@
 #define ENA_GLOBALS
 #include <limits.h>
 #define ENA_URL_SEPERATOR "?"
+#define SETTINGS_FILETYPE_SIZE 64
 
 int LOG_COUNTER;
 
