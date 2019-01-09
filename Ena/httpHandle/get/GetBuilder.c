@@ -7,7 +7,7 @@
 #include "../../globals.h"
 #include "specialPages/index.h"
 #include "specialPages/defaultError.h"
-#include "../../httpTypeResolver.h"
+#include "../../MIMETYPEResolver.h"
 #include "../../fileIO.h"
 #include "../../log.h"
 #include "../../tools.h"
@@ -23,7 +23,7 @@ void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
 
     char URLTempType[SETTINGS_URL_BUFFER_SIZE];
     char URLTempPath[SETTINGS_URL_BUFFER_SIZE];
-    char httpType[64];
+    char MIMETYPE[64];
     char fileType[64];
 
     char tempLen[8];
@@ -65,14 +65,14 @@ void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
         token = strtok(NULL, ".");
     }
     strcpy(request.FILETYPE, URLTempType);
-    typeResolve(request.HTTPTYPE, request.FILETYPE);
+    MIMEResolve(request.MIMETYPE, request.FILETYPE);
 
     printlog("[GetBuilder.c:HandleGet] Found filetype: ", 2);
-    printlog(request.HTTPTYPE, 2);
+    printlog(request.MIMETYPE, 2);
     printlog("\n", 2);
 
     char temptype[4];
-    strncpy(temptype, request.HTTPTYPE, 4);
+    strncpy(temptype, request.MIMETYPE, 4);
     temptype[4] = '\0';
     if (strcmp(temptype, "text") == 0) {
         request.ISBINARY = 0;
@@ -119,10 +119,10 @@ void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
         printf("Lapped 200\n");
         if (!request.ISBINARY) {
             printlog("\ntesst123\n", 0 );
-            buildResponse(response, "200 Ok", request.FILESIZE, request.HTTPTYPE, buffer);
+            buildResponse(response, "200 Ok", request.FILESIZE, request.MIMETYPE, buffer);
         }
         else {
-            buildResponse(response, "200 Ok", 255, request.HTTPTYPE, "");
+            buildResponse(response, "200 Ok", 255, request.MIMETYPE, "");
         }
     }
     else if (request.STATUS == 404) {

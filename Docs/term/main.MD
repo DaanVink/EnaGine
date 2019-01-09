@@ -6,8 +6,6 @@ Name: description [example [if applicable]]
 ## Common terms
 * $-data: $-data is data added after the file request in the request header. It is seperated by a $-sign. (index.html$name=john, test.html$id=0)
 * Method: HTTP method used by the user request [POST, GET]
-* HTTP version: version of the HTTP standard as used in the user request [HTTP/1, HTTP/2]
-* Filetype: HTTP filetype used to designate different types of data [text/plain, image/png]
 * File extension: extension the file has on disk [.txt, .png]
 * Headerpath: path to file as designated in the header [/folder/index.html]
 * Filepath: path to file as seen on disk [C:/server/root/index.html, /home/user/root/index.html]

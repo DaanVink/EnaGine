@@ -1,7 +1,7 @@
 # EnaGine documentation
 
 ## Getting started
-This software is designed to work ootb (out of the box). This means that you simply install it and it will run, without any additional setup. If it does not, please contact the repo maintainer with details about your issue, or file an issue on github.
+This software is designed to run out of the box. This means that you simply install it and it will run, without any additional setup. If it does not, please contact the repository maintainer with details about your issue, or file an issue on github.
 
 ## Documentation Layout
 This documentation is divided up into sections, corresponding to type of task they fulfill. The main 4 sections are:

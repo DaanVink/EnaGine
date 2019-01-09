@@ -9,7 +9,7 @@ typedef struct {
     char FILEPATH[PATH_MAX];
     char FOLDERPATH[PATH_MAX];
     char FILETYPE[64];
-    char HTTPTYPE[64];
+    char MIMETYPE[64];
     int  STATUS;
     int  ISBINARY;
     int  ISFOLDER;

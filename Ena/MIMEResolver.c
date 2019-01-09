@@ -8,7 +8,7 @@ typedef struct {
     char *type;
 } EXT_FINDER;
 
-void typeResolve(char* returnaddr[], char* input[]) {
+void MIMEResolve(char* returnaddr[], char* input[]) {
 
     EXT_FINDER WEB_EXTENSIONS[] ={
     {"gif", "image/gif" },
