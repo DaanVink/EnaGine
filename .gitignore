@@ -6,5 +6,4 @@ root/
 *.exe
 *.json
 !.vscode/*
-
-*.txt
+log.txt
