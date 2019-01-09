@@ -1,6 +1,6 @@
 #ifndef ENA_SPECIALPAGES_INDEX
 #define ENA_SPECIALPAGES_INDEX
 
-char * buildIndexPage(char * page, char* location[], char* requestLocation[]);
+int* buildIndexPage(char *page, int len, char* location[], char* requestLocation[]);
 
 #endif

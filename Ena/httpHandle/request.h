@@ -13,6 +13,7 @@ typedef struct {
     int  STATUS;
     int  ISBINARY;
     int  ISFOLDER;
+    int* FILESIZE;
 } REQUEST;
 
 #endif

@@ -8,5 +8,6 @@ void printlog(char* value[], int mode) {
         printf(value);
         fputs(value, fp);
         fclose(fp);
+        fflush(stdout);
     }
 }
