@@ -7,11 +7,12 @@
 #include "../../globals.h"
 #include "specialPages/index.h"
 #include "specialPages/defaultError.h"
-#include "../../MIMETYPEResolver.h"
+#include "../../MIMEResolver.h"
 #include "../../fileIO.h"
 #include "../../log.h"
 #include "../../tools.h"
 #include "../request.h"
+#include "../error.h"
 
 void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
 
@@ -118,11 +119,13 @@ void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
     if (request.STATUS == 200) {
         printf("Lapped 200\n");
         if (!request.ISBINARY) {
-            printlog("\ntesst123\n", 0 );
-            buildResponse(response, "200 Ok", request.FILESIZE, request.MIMETYPE, buffer);
+            printf("\nFilesize here: %d\n", request.FILESIZE);
+            request.FILESIZE = buildResponse(response, "200 Ok", request.FILESIZE, request.MIMETYPE, buffer);
+            strcat(response, buffer);
+            printf("\n%d\n", request.FILESIZE);
         }
         else {
-            buildResponse(response, "200 Ok", 255, request.MIMETYPE, "");
+            request.FILESIZE = buildResponse(response, "200 Ok", request.FILESIZE, request.MIMETYPE, "");
         }
     }
     else if (request.STATUS == 404) {
@@ -142,15 +145,18 @@ void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
             fflush(stdout);
             if (IOStatus == 404) {
                 printlog("[GetBuilder.c:HandleGet] Error in reading 404 page, falling back to hardcoded\n", 0);
-                *request.FILESIZE = strlen(page_404);
+                defaultError(buffer, 404);
+                *request.FILESIZE = strlen(buffer);
                 printf("%d", request.FILESIZE);
-                buildResponse(response, "404 Not Found", request.FILESIZE, "text/html", page_404);
+                request.FILESIZE = buildResponse(response, "404 Not Found", request.FILESIZE, "text/html", buffer);
+                strcat(response, buffer);
             }
             else if (IOStatus == 500) {
                 request.STATUS = 500;
             }
             else {
-                buildResponse(response, "404 Not Found", request.FILESIZE, "text/html", errorPage);
+                request.FILESIZE = buildResponse(response, "404 Not Found", request.FILESIZE, "text/html", errorPage);
+                strcat(response, errorPage);
             }
         }
         else if (request.ISFOLDER) {
@@ -158,7 +164,8 @@ void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
             char indexPage[SETTINGS_FILE_BUFFER_SIZE];
             request.FILESIZE = buildIndexPage(indexPage, strlen(indexPage), folderPath, fileRequest);
             request.STATUS = 200;
-            buildResponse(response, "200 Ok", request.FILESIZE, "text/html", indexPage);
+            request.FILESIZE = buildResponse(response, "200 Ok", request.FILESIZE, "text/html", indexPage);
+            strcat(response, indexPage);
             indexPage[0] = '\0';
         }
     }
@@ -177,11 +184,14 @@ void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
 
             if (IOStatus == 404) {
                 printlog("[GetBuilder.c:HandleGet] Error in reading 500 page, falling back to hardcoded\n", 0);
-                *request.FILESIZE = strlen(page_500);
-                buildResponse(response, "500 Internal Server Error", request.FILESIZE, "text/html", page_500);
+                defaultError(buffer, 500);
+                *request.FILESIZE = strlen(buffer);
+                request.FILESIZE = buildResponse(response, "500 Internal Server Error", request.FILESIZE, "text/html", buffer);
+                strcat(response, buffer);
             }
             else {
-                buildResponse(response, "500 Internal Server Error", request.FILESIZE, "text/html", errorPage);
+                request.FILESIZE = buildResponse(response, "500 Internal Server Error", request.FILESIZE, "text/html", errorPage);
+                strcat(response, errorPage);
             }
         }
         else if (request.ISFOLDER == 1) {
@@ -189,15 +199,23 @@ void HandleGet (SOCKET sock, char* fileRequest[], REQUEST request) {
             char indexPage[SETTINGS_FILE_BUFFER_SIZE];
             request.FILESIZE = buildIndexPage(indexPage, sizeof(indexPage), folderPath, fileRequest);
             request.STATUS = 200;
-            buildResponse(response, "200 Ok", request.FILESIZE, "text/html", indexPage);
+            request.FILESIZE = buildResponse(response, "200 Ok", request.FILESIZE, "text/html", indexPage);
+            strcat(response, indexPage);
             indexPage[0] = '\0';
         }
     }
-
     printlog(response, 2);
     printlog("\n", 2);
+    response[strlen(response)] = '\0';
     send(sock, response, sizeof(response), 0);
     close(sock);
+
+    printf("%d\n", request.FILESIZE);
+    printf("%d\n", strlen(response));
     
+    buffer[0] = '\0';
+    free(buffer);
+    response[0] = '\0';
+    free(response);    
     printlog("[GetBuilder.c:HandleGet] Returning to invoker", 1);
 }

@@ -4,7 +4,7 @@
 #include "settings/settingsParser.h"
 #include "../globals.h"
 #include "build/buildFileTree.h"
-#include "../httpTypeResolver.h"
+#include "../MIMEResolver.h"
 #include "../log.h"
 
 void init() {

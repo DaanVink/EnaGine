@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-void buildResponse(char* returnaddr[], char* status[], int *length, char* type[], char* data[]) {
+int* buildResponse(char* returnaddr[], char* status[], int *length, char* type[]) {
 
     char lengthBuffer[128];
     strcpy(returnaddr, "HTTP/1.1 ");
@@ -12,7 +12,8 @@ void buildResponse(char* returnaddr[], char* status[], int *length, char* type[]
     strcat(returnaddr, "\nContent-Type: ");
     strcat(returnaddr, type);
     strcat(returnaddr, "\n\n");
-    strcat(returnaddr, data);
     returnaddr[strlen(returnaddr) - 1] = '\0';
+    int len = strlen(returnaddr) + length;
+    return len;
 
 }

@@ -45,6 +45,7 @@ int IOReadText(char* returnaddr[], char* filename[], int *requestsize) {
     rewind(fp);
 
     *requestsize = filesize;
+    strcpy(returnaddr, "\0");
 
     if (fp != NULL && status == 0) {
         /* Read the entire file into memory. */

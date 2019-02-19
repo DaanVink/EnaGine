@@ -62,6 +62,7 @@ void eventThread(int sock) {
     if (strcmp(method, "GET ")) {
         //printlog("get\n");
         printlog("[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)\n", 0);
+        request.FILESIZE = 0;
         HandleGet(sock, fileRequest, request);
     }
 

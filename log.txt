@@ -1,3 +1,13 @@
 [main.c:main] Init finished
-[main.c:main] Initialising socket
-[main.c:main] Waiting for request
+[main.c:server] Inbound request
+[main.c:server] Sending request to (event.c:eventThread)
+[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)
+[GetBuilder.c:HandleGet] Succcesfully received request
+[main.c:server] Closed thread
+==============================
+[main.c:server] Inbound request
+[main.c:server] Sending request to (event.c:eventThread)
+[event.c:eventThread] Sending request over to (handleGet.c:HandleGet)
+[GetBuilder.c:HandleGet] Succcesfully received request
+[main.c:server] Closed thread
+==============================

@@ -30,6 +30,6 @@ int* buildIndexPage(char *page, int *len, char location[], char requestLocation[
         /* could not open directory */
         perror ("");
     }
-    len = strlen(page);
-    return len;
+    int templen = strlen(page);
+    return (int *)templen;
 }   
